@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+/* =========================
+   BASE OVERRIDES
+   Tailwind already ships with Preflight.
+   Only keep explicit overrides here.
+========================= */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+/* =========================
+   APP SHELL
+   Mobile-first:
+   - Full width on mobile
+   - Centered + capped on desktop
+========================= */
+
+@layer components {
+  .app-shell {
+    width: 100%;
+    max-width: 430px; /* iPhone Pro Max-ish */
+    min-height: 100vh;
+  }
+}
