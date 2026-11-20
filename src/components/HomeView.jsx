@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Gift, Search, Pencil, Trash2, X, ArrowRight, MessageCircle, CalendarPlus, ChevronRight } from 'lucide-react';
+import { Gift, Search, Pencil, Trash2, X, ArrowRight, MessageCircle, CalendarPlus, ChevronRight, Send } from 'lucide-react';
 import { daysUntil, formatDayMonth, getZodiacSign, turningAge, parseDate } from '../lib/zodiac.js';
 import { Avatar, Button, EmptyState, Segmented, Sheet } from './ui.jsx';
-import { congratsText, whatsappLinkProps } from '../lib/whatsapp.js';
+import { congratsText, inviteText, whatsappLinkProps } from '../lib/whatsapp.js';
 import CalendarSheet from './CalendarSheet.jsx';
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -21,7 +21,7 @@ function DaysLabel({ days }) {
   );
 }
 
-function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete, onCalendar }) {
+function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete, onCalendar, inviteLink, rewardAmount }) {
   const zodiac = getZodiacSign(friend.birthday);
   const age = turningAge(friend.birthday);
   const days = daysUntil(friend.birthday);
@@ -89,6 +89,18 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete, onCalendar })
           <CalendarPlus size={17} strokeWidth={1.8} /> Al calendario
         </button>
       </div>
+      {inviteLink && (
+        <a
+          {...whatsappLinkProps(friend.phone, inviteText(inviteLink, rewardAmount))}
+          className="mt-2 flex items-center justify-between gap-3 rounded-2xl bg-pop/40 px-4 py-3 active:bg-pop/60"
+        >
+          <span className="min-w-0">
+            <span className="block text-[15px] font-semibold">Invitar a {friend.name} a la app</span>
+            <span className="block text-[13px] text-fg/60">Si hace su primer pedido, los dos ganáis {rewardAmount} € en Amazon</span>
+          </span>
+          <Send size={17} className="shrink-0" />
+        </a>
+      )}
       {details.length > 0 && (
         <dl className="mt-5 divide-y divide-line">
           {details.map(([k, v]) => (
@@ -103,7 +115,7 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete, onCalendar })
   );
 }
 
-export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) {
+export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts, inviteLink, rewardAmount }) {
   const [search, setSearch] = useState('');
   const [searching, setSearching] = useState(false);
   const [sort, setSort] = useState('date');
@@ -271,6 +283,8 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
       {open && (
         <FriendSheet
           friend={open}
+          inviteLink={inviteLink}
+          rewardAmount={rewardAmount}
           onClose={() => setOpen(null)}
           onGifts={act(onGifts)}
           onEdit={act(onEdit)}

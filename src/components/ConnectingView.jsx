@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Users, MessageCircle, Trash2, Send } from 'lucide-react';
-import { whatsappLinkProps } from '../lib/whatsapp.js';
+import { whatsappLinkProps, inviteText } from '../lib/whatsapp.js';
 import { Sheet, Field, inputClass, Button, Avatar, EmptyState, ConfirmSheet } from './ui.jsx';
 
 const GROUPS = [
@@ -9,8 +9,6 @@ const GROUPS = [
   { id: 'professional', name: 'Profesional', icon: '💼', color: 'from-green-500 to-emerald-500' },
 ];
 
-export const inviteText = () =>
-  `¡Hola! Te invito a Cumpleaños, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
 
 
 function AddConnectionSheet({ group, onSave, onClose }) {
@@ -59,7 +57,7 @@ function AddConnectionSheet({ group, onSave, onClose }) {
   );
 }
 
-export default function ConnectingView({ connections, onChange }) {
+export default function ConnectingView({ connections, onChange, inviteLink, rewardAmount }) {
   const [selected, setSelected] = useState(null);
   const [adding, setAdding] = useState(null); // null | '' | groupId
   const [removing, setRemoving] = useState(null);
@@ -171,7 +169,7 @@ export default function ConnectingView({ connections, onChange }) {
         <Plus size={19} /> Añadir persona a un grupo
       </Button>
       <a
-        {...whatsappLinkProps('', inviteText())}
+        {...whatsappLinkProps('', inviteText(inviteLink, rewardAmount))}
           className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
       >
         <Send size={18} /> Invitar por WhatsApp

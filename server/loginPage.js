@@ -1,7 +1,7 @@
 const escape = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-export function loginPage(error = '', username = '', cssHref = '') {
+function shell(title, cssHref, body) {
   return `<!doctype html>
 <html lang="es">
 <head>
@@ -9,7 +9,7 @@ export function loginPage(error = '', username = '', cssHref = '') {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
-<title>Birthday Gifts · Entrar</title>
+<title>Cumpleaños · ${escape(title)}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -29,10 +29,19 @@ ${cssHref ? `<link rel="stylesheet" href="${escape(cssHref)}">` : ''}
   input{width:100%;font-size:16px;padding:14px 16px;border:1px solid transparent;border-radius:16px;margin-bottom:16px;background:#f6f6f7;color:#111}
   input:focus{outline:none;border-color:rgba(17,17,17,.2);background:#fff}
   button{width:100%;font-size:16px;font-weight:600;color:#fff;border:0;border-radius:999px;padding:15px;margin-top:8px;background:#111;cursor:pointer}
+  .hint{margin:18px 0 0;color:#8e8e93;font-size:13px;text-align:center}
+  .gift{background:#f3fde0;border-radius:16px;padding:12px 14px;font-size:14px;margin:-14px 0 22px;line-height:1.4}
   .err{background:#fff0f0;color:#c62828;border-radius:14px;padding:10px 14px;font-size:14px;margin-bottom:16px}
 </style>
 </head>
 <body>
+${body}
+</body>
+</html>`;
+}
+
+export function loginPage(error = '', username = '', cssHref = '') {
+  return shell('Entrar', cssHref, `
   <form class="card" method="post" action="/login">
     <div class="badge">🎂</div>
     <h1>Cumpleaños</h1>
@@ -44,6 +53,25 @@ ${cssHref ? `<link rel="stylesheet" href="${escape(cssHref)}">` : ''}
     <input id="p" name="password" type="password" autocomplete="current-password" required ${username ? 'autofocus' : ''}>
     <button type="submit">Entrar</button>
   </form>
-</body>
-</html>`;
+`);
+}
+
+export function signupPage({ error = '', name = '', username = '', inviter = '', invite = '', amount = 5 }, cssHref = '') {
+  return shell('Crear cuenta', cssHref, `
+  <form method="post" action="/registro">
+    <div class="badge">🎁</div>
+    <h1>Te han invitado</h1>
+    <p class="sub">${escape(inviter)} te invita a Cumpleaños</p>
+    <div class="gift">Añade un cumpleaños y haz tu primer pedido de regalo: los dos conseguís un cheque regalo de Amazon de ${escape(amount)} €.</div>
+    ${error ? `<div class="err" role="alert">${escape(error)}</div>` : ''}
+    <input type="hidden" name="invite" value="${escape(invite)}">
+    <label for="n">Tu nombre</label>
+    <input id="n" name="name" autocomplete="given-name" required value="${escape(name)}" ${name ? '' : 'autofocus'}>
+    <label for="u">Usuario (para entrar)</label>
+    <input id="u" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" required pattern="[a-zA-Z0-9._-]{3,30}" title="Entre 3 y 30 letras, números, puntos o guiones" value="${escape(username)}">
+    <label for="p">Contraseña</label>
+    <input id="p" name="password" type="password" autocomplete="new-password" minlength="6" required>
+    <button type="submit">Crear cuenta</button>
+    <p class="hint">¿Ya tienes cuenta? <a href="/login" style="color:#111">Entra aquí</a></p>
+  </form>`);
 }

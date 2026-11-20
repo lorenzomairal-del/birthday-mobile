@@ -3,7 +3,7 @@ import { Gift, Pencil, Star, Trash2, ExternalLink, Send, LogOut, Download, Uploa
 import { getZodiacSign, formatDayMonth } from '../lib/zodiac.js';
 import * as store from '../lib/storage.js';
 import { Field, inputClass, Button, Avatar, PhotoPicker, ConfirmSheet } from './ui.jsx';
-import { inviteText } from './ConnectingView.jsx';
+import { InviteSection } from './Invites.jsx';
 import { whatsappLinkProps } from '../lib/whatsapp.js';
 import CityInput from './CityInput.jsx';
 
@@ -182,18 +182,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         )}
       </section>
 
-      <section className="rounded-3xl p-5 bg-ink border border-line">
-        <h4 className="font-bold text-fg flex items-center gap-2">
-          <Send size={18} className="text-fg" /> Invita a tus amigos
-        </h4>
-        <p className="text-sm text-fg/70 mt-1 mb-3">Comparte la app con familia y amigos. Necesitarán un usuario para entrar.</p>
-        <a
-          {...whatsappLinkProps('', inviteText())}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
-        >
-          <Send size={18} /> Invitar por WhatsApp
-        </a>
-      </section>
+      <InviteSection me={me} />
 
       {!(window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone) && (
         <section className="rounded-3xl p-5 bg-ink border border-line">

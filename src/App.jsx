@@ -7,6 +7,7 @@ import GiftShop from './components/GiftShop.jsx';
 import ConnectingView from './components/ConnectingView.jsx';
 import ProfileView from './components/ProfileView.jsx';
 import { ConfirmSheet } from './components/ui.jsx';
+import { WelcomeCard } from './components/Invites.jsx';
 
 
 const TABS = [
@@ -53,6 +54,18 @@ export default function App() {
         setReady(true);
       });
   }, [loadAll]);
+
+  // Progreso del invitado hacia el cheque regalo (se guarda en el servidor).
+  const progress = useCallback((step) => {
+    fetch('/api/progress', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ step }) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((info) => info && setMe((m) => ({ ...m, ...info })))
+      .catch(() => {});
+  }, []);
+  const needsBirthdayStep = Boolean(me?.steps && !me.steps.birthday && friends.length > 0);
+  useEffect(() => {
+    if (needsBirthdayStep) progress('birthday');
+  }, [needsBirthdayStep, progress]);
 
   const persist = (key, setter) => (next) => {
     setter(next);
@@ -104,8 +117,13 @@ export default function App() {
       </header>
 
       <main className="max-w-xl mx-auto px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom))]">
+        {view === 'home' && me && (
+          <WelcomeCard me={me} friendsCount={friends.length} onAdd={() => setEditing('new')} onOrder={() => progress('order')} />
+        )}
         {view === 'home' && (
           <HomeView
+            inviteLink={me?.inviteLink}
+            rewardAmount={me?.rewardAmount}
             friends={friends}
             onAdd={() => setEditing('new')}
             onEdit={setEditing}
@@ -113,7 +131,7 @@ export default function App() {
             onGifts={setShopFor}
           />
         )}
-        {view === 'connecting' && <ConnectingView connections={connections} onChange={saveConnections} />}
+        {view === 'connecting' && <ConnectingView connections={connections} onChange={saveConnections} inviteLink={me?.inviteLink} rewardAmount={me?.rewardAmount} />}
         {view === 'profile' && (
           <ProfileView
             me={me}

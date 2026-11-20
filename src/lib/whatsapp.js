@@ -26,3 +26,6 @@ export const whatsappLinkProps = (phone, text) => ({
 });
 
 export const congratsText = (friend) => `¡Feliz cumpleaños, ${friend.name}! Que pases un día genial.`;
+
+export const inviteText = (link, amount = 5) =>
+  `¡Hola! Te invito a Cumpleaños, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto. Si te registras con mi enlace, añades un cumpleaños y haces tu primer pedido, los dos ganamos un cheque regalo de Amazon de ${amount} €: ${link || (typeof window !== 'undefined' ? window.location.origin : '')}`;

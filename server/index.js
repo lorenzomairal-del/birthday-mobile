@@ -12,7 +12,8 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
-import { loginPage as renderLogin } from './loginPage.js';
+import { loginPage as renderLogin, signupPage as renderSignup } from './loginPage.js';
+import { hasAccount, checkPassword, createAccount, markStep, accountInfo, REWARD_AMOUNT } from './accounts.js';
 import { buildIcs } from '../src/lib/calendar.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,7 @@ try {
   console.warn('No se encontró dist/index.html: ejecuta npm run build.');
 }
 const loginPage = (error, username) => renderLogin(error, username, APP_CSS);
+const signupPage = (opts) => renderSignup({ amount: REWARD_AMOUNT, ...opts }, APP_CSS);
 
 const USERS = parseUsers(process.env.APP_USERS || '');
 if (USERS.size === 0) {
@@ -73,7 +75,8 @@ function verify(token) {
   if (!safeEqual(sig, expected)) return null;
   try {
     const data = JSON.parse(Buffer.from(body, 'base64url').toString());
-    if (!data.u || !USERS.has(data.u) || data.exp < Date.now()) return null;
+    // s: cuenta creada por invitación (sigue valiendo aunque se pierda el archivo de cuentas de prueba).
+    if (!data.u || !(USERS.has(data.u) || hasAccount(data.u) || data.s) || data.exp < Date.now()) return null;
     return data;
   } catch {
     return null;
@@ -89,8 +92,8 @@ function readCookie(req, name) {
   return null;
 }
 
-function setSessionCookie(res, user) {
-  const token = sign({ u: user, exp: Date.now() + SESSION_DAYS * 864e5 });
+function setSessionCookie(res, user, signup = false) {
+  const token = sign({ u: user, exp: Date.now() + SESSION_DAYS * 864e5, ...(signup ? { s: 1 } : {}) });
   res.cookie(COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
@@ -144,13 +147,56 @@ app.post('/login', (req, res) => {
   const pass = String(req.body.password || '');
   const stored = USERS.get(user);
   // Compara siempre, aunque el usuario no exista, para no dar pistas por tiempo.
-  const ok = safeEqual(pass, stored ?? crypto.randomBytes(16).toString('hex')) && stored !== undefined;
+  let ok = safeEqual(pass, stored ?? crypto.randomBytes(16).toString('hex')) && stored !== undefined;
+  const invited = !ok && hasAccount(user) && checkPassword(user, pass);
+  ok = ok || invited;
   if (!ok) {
     recordFailure(ip);
     return res.status(401).type('html').send(loginPage('Usuario o contraseña incorrectos.', user));
   }
   attempts.delete(ip);
-  setSessionCookie(res, user);
+  setSessionCookie(res, user, invited);
+  res.redirect('/');
+});
+
+// Enlaces de invitación: /registro?i=<usuario en base64url>.<firma>. Solo quien tiene
+// un enlace firmado puede crear cuenta.
+const inviteSig = (user) => crypto.createHmac('sha256', SECRET).update(`invite:${user}`).digest('base64url').slice(0, 12);
+const inviteToken = (user) => `${Buffer.from(user).toString('base64url')}.${inviteSig(user)}`;
+function inviterFrom(token) {
+  const [u64, sig] = String(token || '').split('.');
+  if (!u64 || !sig) return null;
+  const user = Buffer.from(u64, 'base64url').toString();
+  if (!safeEqual(sig, inviteSig(user))) return null;
+  return USERS.has(user) || hasAccount(user) ? user : null;
+}
+const isTaken = (user) => USERS.has(user) || hasAccount(user);
+
+app.get('/registro', (req, res) => {
+  const inviter = inviterFrom(req.query.i);
+  if (!inviter) return res.status(404).type('html').send(loginPage('Este enlace de invitación no es válido. Pide uno nuevo a quien te invitó.'));
+  res.type('html').send(signupPage({ inviter, invite: req.query.i }));
+});
+
+app.post('/registro', (req, res) => {
+  const ip = req.ip;
+  const invite = String(req.body.invite || '');
+  const inviter = inviterFrom(invite);
+  if (!inviter) return res.status(400).type('html').send(loginPage('Este enlace de invitación no es válido.'));
+  if (tooManyAttempts(ip)) return res.status(429).type('html').send(loginPage('Demasiados intentos. Prueba de nuevo en unos minutos.'));
+  const name = String(req.body.name || '').trim().slice(0, 40);
+  const user = String(req.body.username || '').trim().toLowerCase();
+  const pass = String(req.body.password || '');
+  const again = (error) => res.status(400).type('html').send(signupPage({ error, name, username: user, inviter, invite }));
+  if (!name) return again('Escribe tu nombre.');
+  if (!/^[a-z0-9._-]{3,30}$/.test(user)) return again('El usuario debe tener entre 3 y 30 letras, números, puntos o guiones.');
+  if (pass.length < 6) return again('La contraseña debe tener al menos 6 caracteres.');
+  if (isTaken(user)) {
+    recordFailure(ip);
+    return again('Ese usuario ya existe. Elige otro.');
+  }
+  createAccount(user, pass, name, inviter);
+  setSessionCookie(res, user, true);
   res.redirect('/');
 });
 
@@ -171,7 +217,19 @@ app.use((req, res, next) => {
 });
 
 app.get('/api/me', (req, res) => {
-  res.json({ user: req.user, ai: Boolean(process.env.ANTHROPIC_API_KEY) });
+  res.json({
+    user: req.user,
+    ai: Boolean(process.env.ANTHROPIC_API_KEY),
+    inviteLink: `${req.protocol}://${req.get('host')}/registro?i=${inviteToken(req.user)}`,
+    rewardAmount: REWARD_AMOUNT,
+    ...accountInfo(req.user),
+  });
+});
+
+// Progreso del invitado hacia el cheque: 'birthday' (ha añadido un cumpleaños) u 'order' (primer pedido).
+app.post('/api/progress', (req, res) => {
+  markStep(req.user, String(req.body?.step || ''));
+  res.json(accountInfo(req.user));
 });
 
 // Calendario .ics con los cumpleaños que manda la app (los datos viven en el navegador).
