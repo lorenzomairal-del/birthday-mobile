@@ -1,16 +1,40 @@
-# React + Vite
+# Birthday Gifts
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App para no olvidar cumpleaños y encontrar regalos, pensada para el móvil y protegida con usuario y contraseña.
 
-Currently, two official plugins are available:
+## Qué hace
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Cumpleaños**: lista ordenada por próximos o A-Z, buscador, cuenta atrás, edad que cumple, signo del zodiaco y foto.
+- **Ideas de regalo**: recomendaciones, favoritos (❤️), wishlist (⭐), chat para pedir ideas con IA y enlaces de compra con UTM.
+- **Connecting**: grupos de Familia, Amigos y Profesional con acceso directo a WhatsApp.
+- **Mi perfil**: datos propios, ciudad con autocompletado, wishlist, invitar por WhatsApp, exportar/importar datos y cerrar sesión.
 
-## React Compiler
+Los datos se guardan en el navegador de cada persona (separados por usuario). Para pasarlos a otro dispositivo, usa *Exportar* e *Importar* en Mi perfil.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Desarrollo
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run build
+APP_USERS="loren:una-contraseña" npm start   # http://localhost:3000
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Para trabajar con recarga en caliente: `APP_USERS=... npm run dev:server` en una terminal y `npm run dev` en otra (Vite redirige `/api` y `/login` al servidor).
+
+## Variables de entorno
+
+| Variable | Para qué |
+| --- | --- |
+| `APP_USERS` | Usuarios permitidos: `usuario1:contraseña1,usuario2:contraseña2` |
+| `SESSION_SECRET` | Texto largo aleatorio para firmar la sesión (Render lo genera solo) |
+| `ANTHROPIC_API_KEY` | Opcional. Activa las ideas de regalo con IA; sin ella se usan ideas predefinidas |
+
+Para añadir o quitar a alguien, cambia `APP_USERS` en Render (Environment) y guarda: el servicio se reinicia solo.
+
+## Despliegue en Render
+
+1. En Render: **New → Blueprint**, elige este repositorio. Usa `render.yaml`.
+2. Rellena `APP_USERS` (y `ANTHROPIC_API_KEY` si quieres IA).
+3. Al terminar tendrás una URL tipo `https://birthday-gifts.onrender.com`.
+
+En el plan gratuito el servicio se duerme tras 15 minutos sin uso; la primera visita después tarda unos 30-50 segundos en cargar.

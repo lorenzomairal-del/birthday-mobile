@@ -1,47 +1,54 @@
 @import "tailwindcss";
 
-/* =========================
-   BASE OVERRIDES
-   Tailwind already ships with Preflight.
-   Only keep explicit overrides here.
-========================= */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
 
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
-
-  html,
   body {
     margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100dvh;
+    color: #1f2937;
+    background: linear-gradient(160deg, #f5f3ff 0%, #fdf2f8 55%, #eff6ff 100%) fixed;
     overflow-x: hidden;
   }
-
-  #root {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  /* 16px en campos evita el zoom automático de iOS al escribir */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  button {
+    cursor: pointer;
   }
 }
 
-/* =========================
-   APP SHELL
-   Mobile-first:
-   - Full width on mobile
-   - Centered + capped on desktop
-========================= */
-
-@layer components {
-  .app-shell {
-    width: 100%;
-    max-width: 430px; /* iPhone Pro Max-ish */
-    min-height: 100vh;
+@layer utilities {
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .bg-brand { background-image: linear-gradient(90deg, #7c3aed, #db2777); }
+  .text-brand {
+    background-image: linear-gradient(90deg, #7c3aed, #db2777);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-sheet { animation: sheet-up 0.25s ease-out; }
+.animate-fade { animation: fade-in 0.2s ease-out; }
+@media (min-width: 640px) {
+  .animate-sheet { animation: fade-in 0.2s ease-out; }
 }
