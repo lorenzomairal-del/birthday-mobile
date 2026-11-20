@@ -44,7 +44,7 @@ function CityInput({ value, onChange }) {
         onBlur={() => setTimeout(() => setSuggestions([]), 200)}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute z-20 inset-x-0 mt-1 bg-surface border border-line rounded-xl overflow-hidden">
+        <ul className="absolute z-20 inset-x-0 mt-1 bg-ink border border-line rounded-2xl shadow-lg overflow-hidden">
           {suggestions.map((c) => (
             <li key={c.key}>
               <button
@@ -107,7 +107,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
   return (
     <div className="space-y-4">
 
-      <section className="bg-surface rounded-3xl border border-line p-5">
+      <section className="bg-ink rounded-3xl p-5 border border-line">
         {editing ? (
           <div className="space-y-4">
             <PhotoPicker value={data.photo} onChange={(photo) => setData({ ...data, photo })} />
@@ -123,7 +123,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
               <input type="date" className={`${inputClass} min-h-[50px]`} value={data.birthday} onChange={set('birthday')} />
             </Field>
             {zodiac && (
-              <div className="px-3 py-2 rounded-xl bg-fg/[0.04] border border-line text-sm">
+              <div className="px-3 py-2 rounded-xl bg-surface text-sm">
                 <span className="font-semibold">
                   {zodiac.emoji} {zodiac.name} · {zodiac.element}
                 </span>
@@ -205,16 +205,16 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         )}
       </section>
 
-      <section className="bg-surface rounded-3xl border border-line p-5">
+      <section className="bg-ink rounded-3xl p-5 border border-line">
         <h4 className="font-bold text-fg flex items-center gap-2 mb-3">
-          <Star size={18} className="text-accent fill-accent" /> Mi wishlist ({wishlist.length})
+          <Star size={18} className="text-fg fill-pop" /> Mi wishlist ({wishlist.length})
         </h4>
         {wishlist.length === 0 ? (
           <p className="text-sm text-mute">Marca con la estrella las ideas de regalo que quieras guardar aquí.</p>
         ) : (
           <ul className="space-y-2.5">
             {wishlist.map((item) => (
-              <li key={`${item.id}-${item.friendId}`} className="flex gap-3 p-2.5 rounded-2xl border border-line bg-surface">
+              <li key={`${item.id}-${item.friendId}`} className="flex gap-3 p-2.5 rounded-2xl bg-surface">
                 {item.image ? (
                   <img src={item.image} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" onError={(e) => (e.currentTarget.style.visibility = 'hidden')} />
                 ) : (
@@ -241,7 +241,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         )}
       </section>
 
-      <section className="rounded-3xl p-5 bg-surface border border-line">
+      <section className="rounded-3xl p-5 bg-ink border border-line">
         <h4 className="font-bold text-fg flex items-center gap-2">
           <Send size={18} className="text-fg" /> Invita a tus amigos
         </h4>
@@ -250,13 +250,13 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
           href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-fg/5"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
         >
           <Send size={18} /> Invitar por WhatsApp
         </a>
       </section>
 
-      <section className="bg-surface rounded-3xl border border-line p-5">
+      <section className="bg-ink rounded-3xl p-5 border border-line">
         <h4 className="font-bold text-fg">Tus datos</h4>
         <p className="text-sm text-mute mt-1 mb-3">
           {me?.user ? `Has entrado como @${me.user}. ` : ''}Se guardan en este navegador. Descarga una copia para pasarlos a otro móvil u ordenador.

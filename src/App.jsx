@@ -8,9 +8,6 @@ import ConnectingView from './components/ConnectingView.jsx';
 import ProfileView from './components/ProfileView.jsx';
 import { ConfirmSheet } from './components/ui.jsx';
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-const now = new Date();
-const TODAY = `${now.getDate()} · ${ROMAN[now.getMonth()]} · ${now.getFullYear()}`;
 
 const TABS = [
   { id: 'home', label: 'Cumpleaños', icon: Calendar },
@@ -90,32 +87,18 @@ export default function App() {
   return (
     <div className="min-h-dvh">
       <header className="pt-safe">
-        <div className="max-w-xl mx-auto px-5 pt-5">
-          <div className="flex items-center justify-between gap-3 border-b-[1.5px] border-fg pb-2.5">
-            <p className="font-display text-[26px] font-semibold tracking-tight leading-none">
-              Cumple<em className="font-normal text-accent">años</em>
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="eyebrow !text-fg">{TODAY}</span>
-              {view === 'home' && (
-                <button
-                  onClick={() => setEditing('new')}
-                  aria-label="Añadir persona"
-                  className="w-9 h-9 rounded-full bg-fg text-ink flex items-center justify-center shrink-0 active:opacity-80"
-                >
-                  <Plus size={18} strokeWidth={2} />
-                </button>
-              )}
-            </div>
-          </div>
-          {view !== 'home' && (
-            <h1 className="font-display text-[40px] leading-none tracking-tight mt-6">
-              {view === 'connecting' ? 'Conexiones' : (
-                <>
-                  Mi <em className="font-normal text-accent">perfil</em>
-                </>
-              )}
-            </h1>
+        <div className="max-w-xl mx-auto px-5 pt-7 flex items-center justify-between gap-3">
+          <h1 className="text-[32px] font-bold tracking-[-0.035em] leading-tight">
+            {view === 'home' ? 'Cumpleaños' : view === 'connecting' ? 'Conexiones' : 'Mi perfil'}
+          </h1>
+          {view === 'home' && (
+            <button
+              onClick={() => setEditing('new')}
+              aria-label="Añadir persona"
+              className="w-10 h-10 rounded-full bg-fg text-ink flex items-center justify-center shrink-0 active:opacity-80"
+            >
+              <Plus size={20} strokeWidth={2} />
+            </button>
           )}
         </div>
       </header>
@@ -144,7 +127,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-ink/95 backdrop-blur-lg border-t-[1.5px] border-fg pb-safe">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-ink/90 backdrop-blur-lg border-t border-line pb-safe">
         <div className="max-w-xl mx-auto grid grid-cols-3">
           {TABS.map(({ id, label, icon: Icon }) => {
             const active = view === id;
@@ -156,11 +139,11 @@ export default function App() {
                   window.scrollTo({ top: 0 });
                 }}
                 className={`flex flex-col items-center gap-1 pt-3 pb-2 text-[11px] font-medium transition ${
-                  active ? 'text-fg' : 'text-mute/70'
+                  active ? 'text-fg' : 'text-mute/60'
                 }`}
                 aria-current={active ? 'page' : undefined}
               >
-                <Icon size={22} strokeWidth={1.6} />
+                <Icon size={22} strokeWidth={active ? 2.1 : 1.6} />
                 {label}
               </button>
             );

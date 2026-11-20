@@ -16,7 +16,7 @@ function loadHistory(friendId) {
 function GiftCard({ gift, isFav, inWishlist, onFav, onWishlist, onBuy }) {
   const [broken, setBroken] = useState(false);
   return (
-    <div className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col">
+    <div className="bg-surface rounded-3xl overflow-hidden flex flex-col">
       <div className="relative aspect-[4/3] bg-surface-2">
         {gift.image && !broken ? (
           <img src={gift.image} alt="" loading="lazy" className="w-full h-full object-cover" onError={() => setBroken(true)} />
@@ -27,10 +27,10 @@ function GiftCard({ gift, isFav, inWishlist, onFav, onWishlist, onBuy }) {
         )}
         <div className="absolute top-1.5 right-1.5 flex gap-1.5">
           <button onClick={onWishlist} aria-label="Añadir a mi wishlist" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
-            <Star size={16} className={inWishlist ? 'fill-accent text-accent' : 'text-mute'} />
+            <Star size={16} className={inWishlist ? 'fill-pop text-fg' : 'text-mute'} />
           </button>
           <button onClick={onFav} aria-label="Favorito" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
-            <Heart size={16} className={isFav ? 'fill-accent text-accent' : 'text-mute'} />
+            <Heart size={16} className={isFav ? 'fill-[#ff4d6d] text-[#ff4d6d]' : 'text-mute'} />
           </button>
         </div>
       </div>
@@ -39,8 +39,8 @@ function GiftCard({ gift, isFav, inWishlist, onFav, onWishlist, onBuy }) {
         <p className="text-xs text-mute mt-1 line-clamp-2">{gift.description}</p>
         {gift.match && <p className="text-[11px] text-accent bg-fg/[0.06] rounded-md px-2 py-1 mt-2 line-clamp-2">{gift.match}</p>}
         <div className="mt-auto pt-2">
-          <p className="text-accent font-bold text-sm mb-2">{gift.price}</p>
-          <button onClick={onBuy} className="w-full bg-fg text-ink rounded-lg py-2 text-sm font-semibold flex items-center justify-center gap-1.5">
+          <p className="font-bold text-[15px] mb-2">{gift.price}</p>
+          <button onClick={onBuy} className="w-full bg-fg text-ink rounded-full py-2.5 text-sm font-semibold flex items-center justify-center gap-1.5">
             <ShoppingBag size={15} /> Comprar
           </button>
         </div>
@@ -137,7 +137,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
 
   return (
     <Sheet title="Ideas de regalo" subtitle={`Para ${friend.name} ${friend.lastName || ''}`} onClose={onClose} full>
-      <div className="sticky top-0 z-10 bg-surface pb-3 -mx-5 px-5">
+      <div className="sticky top-0 z-10 bg-ink pb-3 -mx-5 px-5">
         <Segmented
           value={tab}
           onChange={setTab}
@@ -149,7 +149,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
       </div>
 
       {tab === 'ideas' && (
-        <div className="rounded-2xl bg-surface border border-line p-3 mb-4">
+        <div className="rounded-3xl bg-surface p-3 mb-4">
           <div className="space-y-1.5 mb-2.5 max-h-28 overflow-y-auto text-sm">
             {hist.chatHistory.length === 0 ? (
               <p className="text-fg/85">
@@ -176,9 +176,9 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
               onChange={(e) => setMsg(e.target.value)}
               placeholder="Ej: le encanta el café y los libros"
               enterKeyHint="send"
-              className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-line rounded-xl focus:outline-none focus:ring-4 focus:ring-accent/10"
+              className="flex-1 min-w-0 px-4 py-2.5 bg-ink rounded-full focus:outline-none focus:ring-2 focus:ring-fg/15"
             />
-            <button type="submit" disabled={loading || !msg.trim()} aria-label="Pedir ideas" className="px-3.5 bg-fg text-ink rounded-xl disabled:opacity-40">
+            <button type="submit" disabled={loading || !msg.trim()} aria-label="Pedir ideas" className="w-11 shrink-0 bg-fg text-ink rounded-full flex items-center justify-center disabled:opacity-30">
               {aiEnabled ? <Sparkles size={18} /> : <Send size={18} />}
             </button>
           </form>

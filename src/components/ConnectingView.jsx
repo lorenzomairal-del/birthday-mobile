@@ -96,11 +96,11 @@ export default function ConnectingView({ connections, onChange }) {
     const members = connections[selected] || [];
     return (
       <div>
-        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-accent font-semibold py-1">
+        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-fg/70 font-semibold py-1">
           <ChevronLeft size={20} /> Grupos
         </button>
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h2 className="font-display text-[32px] leading-none">
+          <h2 className="text-[26px] font-bold tracking-[-0.03em] leading-none">
             {group.name}
           </h2>
           <Button className="!py-2 !px-3 text-sm" onClick={() => setAdding(selected)}>
@@ -110,7 +110,7 @@ export default function ConnectingView({ connections, onChange }) {
         {members.length ? (
           <ul className="space-y-2.5">
             {members.map((m) => (
-              <li key={m.id} className="bg-surface rounded-2xl border border-line p-3 flex items-center gap-3">
+              <li key={m.id} className="bg-surface rounded-2xl p-3 flex items-center gap-3">
                 <Avatar size={44} />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-fg truncate">{m.name}</p>
@@ -121,7 +121,7 @@ export default function ConnectingView({ connections, onChange }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`WhatsApp a ${m.name}`}
-                  className="px-3 py-2 border border-line text-fg rounded-xl text-sm font-semibold flex items-center gap-1.5 shrink-0"
+                  className="px-3 py-2 bg-ink text-fg rounded-full text-sm font-semibold flex items-center gap-1.5 shrink-0"
                 >
                   <MessageCircle size={16} /> <span className="hidden min-[400px]:inline">WhatsApp</span>
                 </a>
@@ -154,9 +154,9 @@ export default function ConnectingView({ connections, onChange }) {
             <li key={g.id}>
               <button
                 onClick={() => setSelected(g.id)}
-                className="w-full bg-surface rounded-2xl border border-line p-4 flex items-center gap-4 text-left active:bg-fg/[0.04]"
+                className="w-full bg-surface rounded-2xl p-4 flex items-center gap-4 text-left active:bg-surface-2"
               >
-                <span className="font-display text-[34px] leading-none w-10 text-accent">{count}</span>
+                <span className="w-11 h-11 rounded-full bg-pop text-pop-fg flex items-center justify-center text-lg font-bold shrink-0">{count}</span>
                 <div className="flex-1">
                   <p className="font-bold text-fg">{g.name}</p>
                   <p className="text-sm text-mute">
@@ -177,7 +177,7 @@ export default function ConnectingView({ connections, onChange }) {
         href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-fg/5"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
       >
         <Send size={18} /> Invitar por WhatsApp
       </a>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Gift, Search, Pencil, Trash2, X } from 'lucide-react';
+import { Gift, Search, Pencil, Trash2, X, ArrowRight } from 'lucide-react';
 import { daysUntil, formatDayMonth, getZodiacSign, turningAge } from '../lib/zodiac.js';
 import { Avatar, Button, EmptyState, Segmented, Sheet } from './ui.jsx';
 
@@ -7,8 +7,13 @@ const BUDGETS = { low: 'Hasta 20€', 'medium-low': '20-50€', medium: '50-100�
 const RELATIONS = { family: 'Familia', friend: 'Amistad', partner: 'Pareja', coworker: 'Trabajo', acquaintance: 'Conocido/a' };
 
 function DaysLabel({ days }) {
-  const text = days === 0 ? 'hoy' : days === 1 ? 'mañana' : `en ${days} días`;
-  return <span className="text-[13px] font-semibold text-accent whitespace-nowrap">{text}</span>;
+  if (days === 0) return <span className="px-2.5 py-1 rounded-full bg-pop text-pop-fg text-[13px] font-semibold">Hoy</span>;
+  if (days === 1) return <span className="text-[15px] font-semibold whitespace-nowrap">Mañana</span>;
+  return (
+    <span className="text-[15px] font-semibold whitespace-nowrap">
+      {days} <span className="text-mute font-medium">días</span>
+    </span>
+  );
 }
 
 function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
@@ -37,10 +42,10 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
           <Button className="flex-1" onClick={() => onGifts(friend)}>
             <Gift size={17} /> Ideas de regalo
           </Button>
-          <button onClick={() => onEdit(friend)} aria-label="Editar" className="w-12 rounded-xl border border-line flex items-center justify-center active:bg-fg/5">
+          <button onClick={() => onEdit(friend)} aria-label="Editar" className="w-12 rounded-full bg-surface flex items-center justify-center active:bg-fg/5">
             <Pencil size={18} strokeWidth={1.6} />
           </button>
-          <button onClick={() => onDelete(friend)} aria-label="Eliminar" className="w-12 rounded-xl border border-line flex items-center justify-center text-red-700 active:bg-red-500/10">
+          <button onClick={() => onDelete(friend)} aria-label="Eliminar" className="w-12 rounded-full bg-surface flex items-center justify-center text-red-700 active:bg-red-500/10">
             <Trash2 size={18} strokeWidth={1.6} />
           </button>
         </div>
@@ -50,19 +55,19 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
         <Avatar src={friend.photo} name={friend.name} lastName={friend.lastName} size={64} />
         {zodiac && (
           <div>
-            <p className="font-display text-2xl leading-none">
-              {zodiac.name} <span className="text-mute italic text-lg">· {zodiac.element}</span>
+            <p className="text-lg font-semibold leading-none">
+              {zodiac.name} <span className="text-mute font-medium">· {zodiac.element}</span>
             </p>
             <p className="text-sm text-mute mt-1.5">{zodiac.traits}</p>
           </div>
         )}
       </div>
       {details.length > 0 && (
-        <dl className="mt-5 divide-y divide-line border-y border-line">
+        <dl className="mt-5 divide-y divide-line">
           {details.map(([k, v]) => (
             <div key={k} className="py-3 flex gap-4">
-              <dt className="eyebrow w-28 shrink-0 pt-0.5">{k}</dt>
-              <dd className="text-sm text-fg/90">{v}</dd>
+              <dt className="eyebrow w-32 shrink-0">{k}</dt>
+              <dd className="text-[15px]">{v}</dd>
             </div>
           ))}
         </dl>
@@ -91,7 +96,7 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
   if (!friends.length) {
     return (
       <EmptyState
-        icon={<Gift className="text-accent" size={36} strokeWidth={1.4} />}
+        icon={<Gift className="text-pop-fg" size={34} strokeWidth={1.6} />}
         title="Aún no hay cumpleaños"
         text="Añade a tus amigos y familia para empezar"
         action={<Button onClick={onAdd}>Añadir persona</Button>}
@@ -111,33 +116,38 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
   return (
     <div>
       {!search && (
-        <section className="pt-1">
-          <p className="eyebrow !text-accent font-semibold">
-            {nextDays === 0 ? 'Hoy' : nextDays === 1 ? 'Mañana' : `En ${nextDays} días`}
-          </p>
-          <button onClick={() => setOpen(next)} className="block text-left mt-2.5">
-            <h2 className="font-display text-[44px] leading-[1] tracking-tight">
-              {next.name} {next.lastName}{' '}
-              {nextAge ? <em className="font-normal">cumple {nextAge}</em> : <em className="font-normal">está de cumpleaños</em>}
-            </h2>
+        <section className="rounded-[28px] bg-pop text-pop-fg p-5 pt-[18px]">
+          <p className="text-[13px] font-semibold opacity-70">Próximo cumpleaños</p>
+          <button onClick={() => setOpen(next)} className="block w-full text-left">
+            <p className="flex items-baseline gap-2 mt-1">
+              {nextDays === 0 ? (
+                <span className="text-[64px] font-bold tracking-[-0.05em] leading-[1]">¡Hoy!</span>
+              ) : (
+                <>
+                  <span className="text-[84px] font-bold tracking-[-0.06em] leading-[0.9]">{nextDays}</span>
+                  <span className="text-lg font-semibold opacity-80">{nextDays === 1 ? 'día' : 'días'}</span>
+                </>
+              )}
+            </p>
+            <p className="mt-3 text-xl font-semibold tracking-[-0.02em] truncate">
+              {next.name} {next.lastName}
+            </p>
+            <p className="text-sm font-medium opacity-70 mt-0.5">
+              {nextAge ? `Cumple ${nextAge} · ` : ''}
+              {formatDayMonth(next.birthday, { day: 'numeric', month: 'long' })}
+              {nextZodiac ? ` · ${nextZodiac.name}` : ''}
+            </p>
           </button>
-          <p className="text-[15px] leading-relaxed text-fg/75 mt-3">
-            {formatDayMonth(next.birthday)}.
-            {nextZodiac ? ` ${nextZodiac.name}: ${nextZodiac.traits.toLowerCase()}.` : ''}
-            {next.interests ? ` Le gusta: ${next.interests}.` : ''}
-          </p>
-          <div className="flex gap-2.5 mt-5">
-            <button onClick={() => onGifts(next)} className="rounded-full bg-fg text-ink px-5 py-3 text-[15px] font-semibold active:opacity-85">
-              Ideas de regalo
-            </button>
-            <button onClick={() => setOpen(next)} className="rounded-full border-[1.5px] border-fg px-5 py-3 text-[15px] font-semibold active:bg-fg/5">
-              Ver ficha
-            </button>
-          </div>
+          <button
+            onClick={() => onGifts(next)}
+            className="mt-5 w-full flex items-center justify-between rounded-full bg-pop-fg text-pop px-5 py-3.5 text-[15px] font-semibold active:opacity-90"
+          >
+            Ideas de regalo <ArrowRight size={18} />
+          </button>
         </section>
       )}
 
-      <div className="mt-9 mb-1 flex items-center justify-between gap-3 min-h-10 border-b border-fg/30">
+      <div className="mt-7 mb-1 flex items-center justify-between gap-3 min-h-10">
         {searching ? (
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-mute" size={17} />
@@ -170,7 +180,7 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
                 { value: 'name', label: 'A–Z' },
               ]}
             />
-            <button onClick={() => setSearching(true)} aria-label="Buscar" className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-fg/80 active:bg-fg/5">
+            <button onClick={() => setSearching(true)} aria-label="Buscar" className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-fg/70 active:bg-surface-2">
               <Search size={17} strokeWidth={1.8} />
             </button>
           </>
@@ -184,19 +194,16 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
           const days = daysUntil(f.birthday);
           const zodiac = getZodiacSign(f.birthday);
           return (
-            <li key={f.id} className="border-b border-fg/15">
-              <button onClick={() => setOpen(f)} className="w-full flex items-center gap-4 py-3.5 text-left active:opacity-70">
-                <div className="w-12 text-center shrink-0">
-                  <span className="block font-display text-[28px] leading-none">{formatDayMonth(f.birthday, { day: 'numeric' })}</span>
-                  <span className="eyebrow !text-[10px]">{formatDayMonth(f.birthday, { month: 'short' }).replace('.', '')}</span>
-                </div>
+            <li key={f.id} className="border-b border-line last:border-0">
+              <button onClick={() => setOpen(f)} className="w-full flex items-center gap-3.5 py-3 text-left active:opacity-60">
+                <Avatar src={f.photo} name={f.name} lastName={f.lastName} size={44} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-display text-[19px] leading-tight truncate">
+                  <p className="text-base font-semibold tracking-[-0.01em] truncate">
                     {f.name} {f.lastName}
                   </p>
                   <p className="text-[13px] text-mute truncate">
-                    {zodiac ? zodiac.name : ''}
-                    {turningAge(f.birthday) ? ` · cumple ${turningAge(f.birthday)}` : ''}
+                    {formatDayMonth(f.birthday, { day: 'numeric', month: 'short' })}
+                    {zodiac ? ` · ${zodiac.name}` : ''}
                   </p>
                 </div>
                 <DaysLabel days={days} />
