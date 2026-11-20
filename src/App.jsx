@@ -161,7 +161,6 @@ export default function App() {
         <ConfirmSheet
           title={`¿Eliminar a ${deleting.name}?`}
           text="Se borrarán sus datos, favoritos y regalos guardados. No se puede deshacer."
-          requireWord="Eliminar"
           onConfirm={() => deleteFriend(deleting.id)}
           onClose={() => setDeleting(null)}
         />

@@ -28,7 +28,7 @@ export default function FriendForm({ friend, onSave, onClose }) {
             </Button>
           )}
           {/* Guardar está disponible desde el paso 1: el resto de datos es opcional */}
-          {!last && friend && (
+          {!last && (
             <Button variant="soft" className="flex-1" disabled={!canContinue} onClick={() => onSave(data)}>
               Guardar
             </Button>
