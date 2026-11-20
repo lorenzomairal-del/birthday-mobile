@@ -121,7 +121,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: '100kb' }));
 
 app.get('/healthz', (_req, res) => res.send('ok'));
-app.get('/favicon.svg', (_req, res) => res.sendFile(path.join(DIST, 'favicon.svg')));
+// Iconos y manifiesto de la app: públicos para que el móvil pueda instalarla.
+for (const file of ['favicon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'manifest.webmanifest']) {
+  app.get(`/${file}`, (_req, res) => res.sendFile(path.join(DIST, file)));
+}
 // Los archivos compilados (JS, CSS, fuentes) no contienen datos: se sirven sin sesión
 // para que la página de login pueda usar las mismas fuentes que la app.
 app.use('/assets', express.static(path.join(DIST, 'assets'), { maxAge: '30d', immutable: true }));

@@ -9,7 +9,7 @@ const GROUPS = [
 ];
 
 export const inviteText = () =>
-  `¡Hola! Te invito a Birthday Gifts, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
+  `¡Hola! Te invito a Cumpleaños, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
 
 const whatsappLink = (phone, text) =>
   `https://wa.me/${(phone || '').replace(/[^0-9]/g, '')}${text ? `?text=${encodeURIComponent(text)}` : ''}`;

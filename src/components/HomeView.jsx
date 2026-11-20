@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Gift, Search, Pencil, Trash2, X, ArrowRight } from 'lucide-react';
+import { Gift, Search, Pencil, Trash2, X, ArrowRight, MessageCircle, CalendarPlus } from 'lucide-react';
 import { daysUntil, formatDayMonth, getZodiacSign, turningAge } from '../lib/zodiac.js';
 import { Avatar, Button, EmptyState, Segmented, Sheet } from './ui.jsx';
+import { congratsLink, downloadIcs } from '../lib/calendar.js';
+
+const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const monthOf = (b) => +((/^\d{4}-(\d{2})/.exec(b || '') || [])[1] || 0);
 
 const BUDGETS = { low: 'Hasta 20€', 'medium-low': '20-50€', medium: '50-100€', 'medium-high': '100-200€', high: '200-500€', premium: 'Más de 500€' };
 const RELATIONS = { family: 'Familia', friend: 'Amistad', partner: 'Pareja', coworker: 'Trabajo', acquaintance: 'Conocido/a' };
@@ -62,6 +66,22 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
           </div>
         )}
       </div>
+      <div className="mt-5 grid grid-cols-2 gap-2">
+        <a
+          href={congratsLink(friend)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-[15px] font-semibold bg-surface active:bg-surface-2"
+        >
+          <MessageCircle size={17} strokeWidth={1.8} /> Felicitar
+        </a>
+        <button
+          onClick={() => downloadIcs([friend], `cumple-${(friend.name || 'persona').toLowerCase()}.ics`)}
+          className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-[15px] font-semibold bg-surface active:bg-surface-2"
+        >
+          <CalendarPlus size={17} strokeWidth={1.8} /> Recordatorio
+        </button>
+      </div>
       {details.length > 0 && (
         <dl className="mt-5 divide-y divide-line">
           {details.map(([k, v]) => (
@@ -108,6 +128,13 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
   const nextDays = daysUntil(next.birthday);
   const nextAge = turningAge(next.birthday);
   const nextZodiac = getZodiacSign(next.birthday);
+  const grouped = sort === 'date' && !search.trim();
+  const thisMonth = new Date().getMonth() + 1;
+  const monthLabel = (f) => {
+    const m = monthOf(f.birthday);
+    if (m === thisMonth && daysUntil(f.birthday) < 32) return 'Este mes';
+    return m === (thisMonth % 12) + 1 ? 'El mes que viene' : MONTHS[m - 1] || '';
+  };
   const act = (fn) => (f) => {
     setOpen(null);
     fn(f);
@@ -190,11 +217,14 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
       {list.length === 0 && <p className="text-center text-mute py-10">No hay nadie con ese nombre.</p>}
 
       <ul>
-        {list.map((f) => {
+        {list.map((f, i) => {
           const days = daysUntil(f.birthday);
           const zodiac = getZodiacSign(f.birthday);
+          const label = monthLabel(f);
+          const header = grouped && (i === 0 || monthLabel(list[i - 1]) !== label);
           return (
-            <li key={f.id} className="border-b border-line last:border-0">
+            <li key={f.id} className={header ? '' : 'border-t border-line'}>
+              {header && <p className={`eyebrow pb-1 ${i === 0 ? 'pt-2' : 'pt-6'}`}>{label}</p>}
               <button onClick={() => setOpen(f)} className="w-full flex items-center gap-3.5 py-3 text-left active:opacity-60">
                 <Avatar src={f.photo} name={f.name} lastName={f.lastName} size={44} />
                 <div className="flex-1 min-w-0">
@@ -212,6 +242,14 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
           );
         })}
       </ul>
+
+      <button
+        onClick={() => downloadIcs(friends)}
+        className="mt-6 w-full flex items-center justify-center gap-2 rounded-full bg-surface px-5 py-3.5 text-[15px] font-semibold active:bg-surface-2"
+      >
+        <CalendarPlus size={17} strokeWidth={1.8} /> Añadir todos a mi calendario
+      </button>
+      <p className="mt-2 text-center text-[13px] text-mute">Te avisará el día antes y el mismo día, cada año.</p>
 
       {open && (
         <FriendSheet friend={open} onClose={() => setOpen(null)} onGifts={act(onGifts)} onEdit={act(onEdit)} onDelete={act(onDelete)} />

@@ -100,7 +100,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
       }
       alert('Datos importados correctamente.');
     } catch {
-      alert('Ese archivo no es una copia válida de Birthday Gifts.');
+      alert('Ese archivo no es una copia válida de la app.');
     }
   };
 
@@ -245,7 +245,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         <h4 className="font-bold text-fg flex items-center gap-2">
           <Send size={18} className="text-fg" /> Invita a tus amigos
         </h4>
-        <p className="text-sm text-fg/70 mt-1 mb-3">Comparte Birthday Gifts con familia y amigos. Necesitarán un usuario para entrar.</p>
+        <p className="text-sm text-fg/70 mt-1 mb-3">Comparte la app con familia y amigos. Necesitarán un usuario para entrar.</p>
         <a
           href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
           target="_blank"
@@ -255,6 +255,18 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
           <Send size={18} /> Invitar por WhatsApp
         </a>
       </section>
+
+      {!(window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone) && (
+        <section className="rounded-3xl p-5 bg-ink border border-line">
+          <h4 className="font-bold text-fg">Tenla como app</h4>
+          <p className="text-sm text-mute mt-1">
+            <span className="text-fg font-medium">iPhone:</span> en Safari, toca Compartir y luego «Añadir a pantalla de inicio».
+          </p>
+          <p className="text-sm text-mute mt-1">
+            <span className="text-fg font-medium">Android:</span> en Chrome, abre el menú ⋮ y toca «Instalar aplicación».
+          </p>
+        </section>
+      )}
 
       <section className="bg-ink rounded-3xl p-5 border border-line">
         <h4 className="font-bold text-fg">Tus datos</h4>

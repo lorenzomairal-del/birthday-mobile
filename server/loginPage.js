@@ -11,6 +11,9 @@ export function loginPage(error = '', username = '', cssHref = '') {
 <meta name="robots" content="noindex, nofollow">
 <title>Birthday Gifts · Entrar</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
 ${cssHref ? `<link rel="stylesheet" href="${escape(cssHref)}">` : ''}
 <style>
   *{box-sizing:border-box}
