@@ -54,7 +54,7 @@ function CityInput({ value, onChange }) {
                   onChange(c.display);
                   setSuggestions([]);
                 }}
-                className="w-full text-left px-4 py-2.5 active:bg-white/5 border-b last:border-b-0 border-line"
+                className="w-full text-left px-4 py-2.5 active:bg-fg/5 border-b last:border-b-0 border-line"
               >
                 <span className="block text-sm font-medium text-fg">{c.name}</span>
                 <span className="block text-xs text-mute">{c.sub}</span>
@@ -123,7 +123,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
               <input type="date" className={`${inputClass} min-h-[50px]`} value={data.birthday} onChange={set('birthday')} />
             </Field>
             {zodiac && (
-              <div className="px-3 py-2 rounded-xl bg-white/[0.04] border border-line text-sm">
+              <div className="px-3 py-2 rounded-xl bg-fg/[0.04] border border-line text-sm">
                 <span className="font-semibold">
                   {zodiac.emoji} {zodiac.name} · {zodiac.element}
                 </span>
@@ -177,25 +177,25 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
                   </p>
                 )}
               </div>
-              <button onClick={() => setEditing(true)} aria-label="Editar perfil" className="p-2.5 rounded-xl bg-white/[0.06] text-fg">
+              <button onClick={() => setEditing(true)} aria-label="Editar perfil" className="p-2.5 rounded-xl bg-fg/[0.06] text-fg">
                 <Pencil size={18} />
               </button>
             </div>
             <dl className="mt-4 space-y-2 text-sm">
               {profile.email && (
-                <div className="flex items-center gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-fg/[0.04] rounded-xl">
                   <Mail size={16} className="text-mute shrink-0" />
                   <dd className="truncate">{profile.email}</dd>
                 </div>
               )}
               {profile.location && (
-                <div className="flex items-center gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-fg/[0.04] rounded-xl">
                   <MapPin size={16} className="text-mute shrink-0" />
                   <dd>{profile.location}</dd>
                 </div>
               )}
               {profile.interests && (
-                <div className="flex items-start gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                <div className="flex items-start gap-2.5 p-3 bg-fg/[0.04] rounded-xl">
                   <Heart size={16} className="text-mute shrink-0 mt-0.5" />
                   <dd>{profile.interests}</dd>
                 </div>
@@ -207,7 +207,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
 
       <section className="bg-surface rounded-3xl border border-line p-5">
         <h4 className="font-bold text-fg flex items-center gap-2 mb-3">
-          <Star size={18} className="text-gold fill-gold" /> Mi wishlist ({wishlist.length})
+          <Star size={18} className="text-accent fill-accent" /> Mi wishlist ({wishlist.length})
         </h4>
         {wishlist.length === 0 ? (
           <p className="text-sm text-mute">Marca con la estrella las ideas de regalo que quieras guardar aquí.</p>
@@ -218,7 +218,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
                 {item.image ? (
                   <img src={item.image} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" onError={(e) => (e.currentTarget.style.visibility = 'hidden')} />
                 ) : (
-                  <div className="w-16 h-16 rounded-xl bg-white/[0.08] shrink-0 flex items-center justify-center text-mute"><Gift size={22} strokeWidth={1.5} /></div>
+                  <div className="w-16 h-16 rounded-xl bg-fg/[0.08] shrink-0 flex items-center justify-center text-mute"><Gift size={22} strokeWidth={1.5} /></div>
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-fg line-clamp-2">{item.name}</p>
@@ -227,10 +227,10 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
                     {(item.friendName || friendName(item.friendId)) && ` · para ${item.friendName || friendName(item.friendId)}`}
                   </p>
                   <div className="flex gap-2 mt-1.5">
-                    <a href={item.link || 'https://www.amazon.es'} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-gold flex items-center gap-1">
+                    <a href={item.link || 'https://www.amazon.es'} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-accent flex items-center gap-1">
                       <ExternalLink size={13} /> Ver producto
                     </a>
-                    <button onClick={() => setRemoving(item)} className="text-xs font-semibold text-red-400 flex items-center gap-1 ml-2">
+                    <button onClick={() => setRemoving(item)} className="text-xs font-semibold text-red-700 flex items-center gap-1 ml-2">
                       <Trash2 size={13} /> Quitar
                     </button>
                   </div>
@@ -250,7 +250,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
           href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-white/5"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-fg/5"
         >
           <Send size={18} /> Invitar por WhatsApp
         </a>
@@ -282,7 +282,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         />
         {me?.user && (
           <form method="post" action="/logout" className="mt-3">
-            <Button variant="secondary" type="submit" className="w-full !text-red-400">
+            <Button variant="secondary" type="submit" className="w-full !text-red-700">
               <LogOut size={17} /> Cerrar sesión
             </Button>
           </form>

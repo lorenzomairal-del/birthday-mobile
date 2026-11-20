@@ -47,7 +47,7 @@ function AddConnectionSheet({ group, onSave, onClose }) {
                 type="button"
                 onClick={() => setData({ ...data, group: g.id })}
                 className={`rounded-xl border py-3 text-sm font-semibold ${
-                  data.group === g.id ? 'border-violet-500 bg-white/[0.06] text-fg' : 'border-line text-fg/70'
+                  data.group === g.id ? 'border-violet-500 bg-fg/[0.06] text-fg' : 'border-line text-fg/70'
                 }`}
               >
                 {g.name}
@@ -96,7 +96,7 @@ export default function ConnectingView({ connections, onChange }) {
     const members = connections[selected] || [];
     return (
       <div>
-        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-gold font-semibold py-1">
+        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-accent font-semibold py-1">
           <ChevronLeft size={20} /> Grupos
         </button>
         <div className="flex items-center justify-between gap-3 mb-4">
@@ -154,9 +154,9 @@ export default function ConnectingView({ connections, onChange }) {
             <li key={g.id}>
               <button
                 onClick={() => setSelected(g.id)}
-                className="w-full bg-surface rounded-2xl border border-line p-4 flex items-center gap-4 text-left active:bg-white/[0.04]"
+                className="w-full bg-surface rounded-2xl border border-line p-4 flex items-center gap-4 text-left active:bg-fg/[0.04]"
               >
-                <span className="font-display text-[34px] leading-none w-10 text-gold">{count}</span>
+                <span className="font-display text-[34px] leading-none w-10 text-accent">{count}</span>
                 <div className="flex-1">
                   <p className="font-bold text-fg">{g.name}</p>
                   <p className="text-sm text-mute">
@@ -177,7 +177,7 @@ export default function ConnectingView({ connections, onChange }) {
         href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-white/5"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-fg/5"
       >
         <Send size={18} /> Invitar por WhatsApp
       </a>

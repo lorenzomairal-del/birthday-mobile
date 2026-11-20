@@ -17,7 +17,7 @@ export function Sheet({ title, subtitle, onClose, children, footer, full = false
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px] animate-fade" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] animate-fade" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
@@ -31,7 +31,7 @@ export function Sheet({ title, subtitle, onClose, children, footer, full = false
             <h3 className="font-display text-[26px] leading-tight truncate">{title}</h3>
             {subtitle && <p className="text-sm text-mute mt-0.5 truncate">{subtitle}</p>}
           </div>
-          <button onClick={onClose} aria-label="Cerrar" className="-mr-1 p-2 rounded-full text-mute hover:bg-white/[0.06] active:bg-line">
+          <button onClick={onClose} aria-label="Cerrar" className="-mr-1 p-2 rounded-full text-mute hover:bg-fg/[0.06] active:bg-line">
             <X size={22} />
           </button>
         </div>
@@ -47,7 +47,7 @@ export function Field({ label, hint, children }) {
   return (
     <label className="block">
       <span className="block eyebrow mb-2">
-        {label} {hint && <span className="normal-case tracking-normal text-gold">{hint}</span>}
+        {label} {hint && <span className="normal-case tracking-normal text-accent">{hint}</span>}
       </span>
       {children}
     </label>
@@ -55,13 +55,13 @@ export function Field({ label, hint, children }) {
 }
 
 export const inputClass =
-  'w-full px-4 py-3 bg-white/[0.03] border border-line rounded-xl text-base text-fg placeholder:text-mute/60 focus:outline-none focus:border-gold/50 focus:bg-white/[0.05]';
+  'w-full px-4 py-3 bg-fg/[0.03] border border-line rounded-xl text-base text-fg placeholder:text-mute/60 focus:outline-none focus:border-accent/50 focus:bg-fg/[0.05]';
 
 export function Button({ variant = 'primary', className = '', ...props }) {
   const styles = {
     primary: 'bg-fg text-ink active:opacity-90',
-    secondary: 'border border-line text-fg active:bg-white/[0.04]',
-    soft: 'bg-white/[0.06] text-fg active:bg-white/10',
+    secondary: 'border border-line text-fg active:bg-fg/[0.04]',
+    soft: 'bg-fg/[0.06] text-fg active:bg-fg/10',
     danger: 'bg-red-500/90 text-white active:bg-red-500',
     whatsapp: 'bg-[#25D366] text-ink',
   };

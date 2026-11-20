@@ -8,7 +8,9 @@ import ConnectingView from './components/ConnectingView.jsx';
 import ProfileView from './components/ProfileView.jsx';
 import { ConfirmSheet } from './components/ui.jsx';
 
-const TODAY = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+const now = new Date();
+const TODAY = `${now.getDate()} · ${ROMAN[now.getMonth()]} · ${now.getFullYear()}`;
 
 const TABS = [
   { id: 'home', label: 'Cumpleaños', icon: Calendar },
@@ -81,8 +83,6 @@ export default function App() {
     setDeleting(null);
   };
 
-  const greetName = profile?.name || (me?.user ? me.user[0].toUpperCase() + me.user.slice(1) : '');
-
   if (!ready) {
     return <div className="min-h-dvh flex items-center justify-center text-mute"><Gift size={40} className="animate-pulse" /></div>;
   }
@@ -90,28 +90,32 @@ export default function App() {
   return (
     <div className="min-h-dvh">
       <header className="pt-safe">
-        <div className="max-w-xl mx-auto px-5 pt-6 pb-2 flex items-end justify-between gap-3">
-          <div className="min-w-0">
-            <p className="eyebrow">{TODAY}</p>
-            <h1 className="font-display text-[34px] leading-[1.05] mt-1.5 truncate">
+        <div className="max-w-xl mx-auto px-5 pt-5">
+          <div className="flex items-center justify-between gap-3 border-b-[1.5px] border-fg pb-2.5">
+            <p className="font-display text-[26px] font-semibold tracking-tight leading-none">
+              Cumple<em className="font-normal text-accent">años</em>
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="eyebrow !text-fg">{TODAY}</span>
               {view === 'home' && (
+                <button
+                  onClick={() => setEditing('new')}
+                  aria-label="Añadir persona"
+                  className="w-9 h-9 rounded-full bg-fg text-ink flex items-center justify-center shrink-0 active:opacity-80"
+                >
+                  <Plus size={18} strokeWidth={2} />
+                </button>
+              )}
+            </div>
+          </div>
+          {view !== 'home' && (
+            <h1 className="font-display text-[40px] leading-none tracking-tight mt-6">
+              {view === 'connecting' ? 'Conexiones' : (
                 <>
-                  Hola{greetName ? ', ' : ''}
-                  <em className="text-gold">{greetName}</em>
+                  Mi <em className="font-normal text-accent">perfil</em>
                 </>
               )}
-              {view === 'connecting' && 'Conexiones'}
-              {view === 'profile' && 'Mi perfil'}
             </h1>
-          </div>
-          {view === 'home' && (
-            <button
-              onClick={() => setEditing('new')}
-              aria-label="Añadir persona"
-              className="w-11 h-11 rounded-full border border-line flex items-center justify-center shrink-0 active:bg-white/5"
-            >
-              <Plus size={20} strokeWidth={1.6} />
-            </button>
           )}
         </div>
       </header>
@@ -140,7 +144,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-ink/90 backdrop-blur-lg border-t border-line pb-safe">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-ink/95 backdrop-blur-lg border-t-[1.5px] border-fg pb-safe">
         <div className="max-w-xl mx-auto grid grid-cols-3">
           {TABS.map(({ id, label, icon: Icon }) => {
             const active = view === id;

@@ -27,19 +27,19 @@ function GiftCard({ gift, isFav, inWishlist, onFav, onWishlist, onBuy }) {
         )}
         <div className="absolute top-1.5 right-1.5 flex gap-1.5">
           <button onClick={onWishlist} aria-label="Añadir a mi wishlist" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
-            <Star size={16} className={inWishlist ? 'fill-gold text-gold' : 'text-mute'} />
+            <Star size={16} className={inWishlist ? 'fill-accent text-accent' : 'text-mute'} />
           </button>
           <button onClick={onFav} aria-label="Favorito" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
-            <Heart size={16} className={isFav ? 'fill-gold text-gold' : 'text-mute'} />
+            <Heart size={16} className={isFav ? 'fill-accent text-accent' : 'text-mute'} />
           </button>
         </div>
       </div>
       <div className="p-3 flex-1 flex flex-col">
         <h5 className="font-bold text-sm text-fg leading-snug line-clamp-2">{gift.name}</h5>
         <p className="text-xs text-mute mt-1 line-clamp-2">{gift.description}</p>
-        {gift.match && <p className="text-[11px] text-gold bg-white/[0.06] rounded-md px-2 py-1 mt-2 line-clamp-2">{gift.match}</p>}
+        {gift.match && <p className="text-[11px] text-accent bg-fg/[0.06] rounded-md px-2 py-1 mt-2 line-clamp-2">{gift.match}</p>}
         <div className="mt-auto pt-2">
-          <p className="text-gold font-bold text-sm mb-2">{gift.price}</p>
+          <p className="text-accent font-bold text-sm mb-2">{gift.price}</p>
           <button onClick={onBuy} className="w-full bg-fg text-ink rounded-lg py-2 text-sm font-semibold flex items-center justify-center gap-1.5">
             <ShoppingBag size={15} /> Comprar
           </button>
@@ -157,7 +157,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
               </p>
             ) : (
               hist.chatHistory.map((m, i) => (
-                <p key={i} className={m.role === 'user' ? 'text-fg font-medium' : 'text-gold'}>
+                <p key={i} className={m.role === 'user' ? 'text-fg font-medium' : 'text-accent'}>
                   {m.role === 'user' ? 'Tú: ' : ''}
                   {m.pending ? <span className="animate-pulse">Pensando…</span> : m.text}
                 </p>
@@ -176,7 +176,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
               onChange={(e) => setMsg(e.target.value)}
               placeholder="Ej: le encanta el café y los libros"
               enterKeyHint="send"
-              className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-line rounded-xl focus:outline-none focus:ring-4 focus:ring-gold/10"
+              className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-line rounded-xl focus:outline-none focus:ring-4 focus:ring-accent/10"
             />
             <button type="submit" disabled={loading || !msg.trim()} aria-label="Pedir ideas" className="px-3.5 bg-fg text-ink rounded-xl disabled:opacity-40">
               {aiEnabled ? <Sparkles size={18} /> : <Send size={18} />}
@@ -215,7 +215,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
                   key={i}
                   onClick={() => saveHist({ ...hist, currentPage: i })}
                   className={`w-9 h-9 rounded-full text-sm font-bold ${
-                    hist.currentPage === i ? 'bg-fg text-ink' : 'bg-white/[0.06] text-fg/70'
+                    hist.currentPage === i ? 'bg-fg text-ink' : 'bg-fg/[0.06] text-fg/70'
                   }`}
                 >
                   {i + 1}
