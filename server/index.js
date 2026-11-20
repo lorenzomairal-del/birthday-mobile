@@ -11,7 +11,8 @@ import express from 'express';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loginPage } from './loginPage.js';
+import fs from 'node:fs';
+import { loginPage as renderLogin } from './loginPage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, '..', 'dist');
@@ -19,6 +20,15 @@ const PORT = process.env.PORT || 3000;
 const IS_PROD = process.env.NODE_ENV === 'production';
 const COOKIE = 'bg_session';
 const SESSION_DAYS = 30;
+
+// Hoja de estilos compilada, para cargar las fuentes en la página de login.
+let APP_CSS = '';
+try {
+  APP_CSS = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').match(/href="(\/assets\/[^"]+\.css)"/)?.[1] || '';
+} catch {
+  console.warn('No se encontró dist/index.html: ejecuta npm run build.');
+}
+const loginPage = (error, username) => renderLogin(error, username, APP_CSS);
 
 const USERS = parseUsers(process.env.APP_USERS || '');
 if (USERS.size === 0) {
@@ -112,6 +122,9 @@ app.use(express.json({ limit: '100kb' }));
 
 app.get('/healthz', (_req, res) => res.send('ok'));
 app.get('/favicon.svg', (_req, res) => res.sendFile(path.join(DIST, 'favicon.svg')));
+// Los archivos compilados (JS, CSS, fuentes) no contienen datos: se sirven sin sesión
+// para que la página de login pueda usar las mismas fuentes que la app.
+app.use('/assets', express.static(path.join(DIST, 'assets'), { maxAge: '30d', immutable: true }));
 
 app.get('/login', (req, res) => {
   if (verify(readCookie(req, COOKIE))) return res.redirect('/');

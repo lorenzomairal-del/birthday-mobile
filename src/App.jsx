@@ -8,10 +8,12 @@ import ConnectingView from './components/ConnectingView.jsx';
 import ProfileView from './components/ProfileView.jsx';
 import { ConfirmSheet } from './components/ui.jsx';
 
+const TODAY = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+
 const TABS = [
   { id: 'home', label: 'Cumpleaños', icon: Calendar },
   { id: 'connecting', label: 'Connecting', icon: Users },
-  { id: 'profile', label: 'Mi perfil', icon: User },
+  { id: 'profile', label: 'Perfil', icon: User },
 ];
 
 export default function App() {
@@ -79,35 +81,42 @@ export default function App() {
     setDeleting(null);
   };
 
+  const greetName = profile?.name || (me?.user ? me.user[0].toUpperCase() + me.user.slice(1) : '');
+
   if (!ready) {
-    return <div className="min-h-dvh flex items-center justify-center text-violet-400"><Gift size={40} className="animate-pulse" /></div>;
+    return <div className="min-h-dvh flex items-center justify-center text-mute"><Gift size={40} className="animate-pulse" /></div>;
   }
 
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-lg border-b border-gray-100 pt-safe">
-        <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shrink-0">
-              <Gift className="text-white" size={19} />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-[17px] font-extrabold text-brand leading-tight">Birthday Gifts</h1>
-              <p className="text-[11px] text-gray-500 leading-tight truncate">Nunca olvides un cumpleaños</p>
-            </div>
+      <header className="pt-safe">
+        <div className="max-w-xl mx-auto px-5 pt-6 pb-2 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="eyebrow">{TODAY}</p>
+            <h1 className="font-display text-[34px] leading-[1.05] mt-1.5 truncate">
+              {view === 'home' && (
+                <>
+                  Hola{greetName ? ', ' : ''}
+                  <em className="text-gold">{greetName}</em>
+                </>
+              )}
+              {view === 'connecting' && 'Conexiones'}
+              {view === 'profile' && 'Mi perfil'}
+            </h1>
           </div>
           {view === 'home' && (
             <button
               onClick={() => setEditing('new')}
-              className="bg-brand text-white pl-3 pr-4 h-9 rounded-full text-sm font-bold flex items-center gap-1.5 shrink-0 active:opacity-90"
+              aria-label="Añadir persona"
+              className="w-11 h-11 rounded-full border border-line flex items-center justify-center shrink-0 active:bg-white/5"
             >
-              <Plus size={17} /> Añadir
+              <Plus size={20} strokeWidth={1.6} />
             </button>
           )}
         </div>
       </header>
 
-      <main className="max-w-xl mx-auto px-4 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))]">
+      <main className="max-w-xl mx-auto px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom))]">
         {view === 'home' && (
           <HomeView
             friends={friends}
@@ -131,7 +140,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-lg border-t border-gray-100 pb-safe">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-ink/90 backdrop-blur-lg border-t border-line pb-safe">
         <div className="max-w-xl mx-auto grid grid-cols-3">
           {TABS.map(({ id, label, icon: Icon }) => {
             const active = view === id;
@@ -142,14 +151,12 @@ export default function App() {
                   setView(id);
                   window.scrollTo({ top: 0 });
                 }}
-                className={`flex flex-col items-center gap-0.5 pt-2.5 pb-2 text-[11px] font-semibold transition ${
-                  active ? 'text-violet-600' : 'text-gray-400'
+                className={`flex flex-col items-center gap-1 pt-3 pb-2 text-[11px] font-medium transition ${
+                  active ? 'text-fg' : 'text-mute/70'
                 }`}
                 aria-current={active ? 'page' : undefined}
               >
-                <span className={`px-4 py-1 rounded-full ${active ? 'bg-violet-100' : ''}`}>
-                  <Icon size={22} strokeWidth={active ? 2.4 : 2} />
-                </span>
+                <Icon size={22} strokeWidth={1.6} />
                 {label}
               </button>
             );

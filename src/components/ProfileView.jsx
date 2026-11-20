@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Pencil, Star, Trash2, ExternalLink, Send, LogOut, Download, Upload, Mail, MapPin, Heart } from 'lucide-react';
+import { Gift, Pencil, Star, Trash2, ExternalLink, Send, LogOut, Download, Upload, Mail, MapPin, Heart } from 'lucide-react';
 import { getZodiacSign, formatDayMonth } from '../lib/zodiac.js';
 import * as store from '../lib/storage.js';
 import { Field, inputClass, Button, Avatar, PhotoPicker, ConfirmSheet } from './ui.jsx';
@@ -44,7 +44,7 @@ function CityInput({ value, onChange }) {
         onBlur={() => setTimeout(() => setSuggestions([]), 200)}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute z-20 inset-x-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+        <ul className="absolute z-20 inset-x-0 mt-1 bg-surface border border-line rounded-xl overflow-hidden">
           {suggestions.map((c) => (
             <li key={c.key}>
               <button
@@ -54,10 +54,10 @@ function CityInput({ value, onChange }) {
                   onChange(c.display);
                   setSuggestions([]);
                 }}
-                className="w-full text-left px-4 py-2.5 active:bg-violet-50 border-b last:border-b-0 border-gray-100"
+                className="w-full text-left px-4 py-2.5 active:bg-white/5 border-b last:border-b-0 border-line"
               >
-                <span className="block text-sm font-medium text-gray-900">{c.name}</span>
-                <span className="block text-xs text-gray-500">{c.sub}</span>
+                <span className="block text-sm font-medium text-fg">{c.name}</span>
+                <span className="block text-xs text-mute">{c.sub}</span>
               </button>
             </li>
           ))}
@@ -106,12 +106,8 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-extrabold text-brand">Mi perfil</h2>
-        {me?.user && <span className="text-xs text-gray-500 bg-white border border-gray-200 rounded-full px-2.5 py-1">@{me.user}</span>}
-      </div>
 
-      <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5">
+      <section className="bg-surface rounded-3xl border border-line p-5">
         {editing ? (
           <div className="space-y-4">
             <PhotoPicker value={data.photo} onChange={(photo) => setData({ ...data, photo })} />
@@ -127,11 +123,11 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
               <input type="date" className={`${inputClass} min-h-[50px]`} value={data.birthday} onChange={set('birthday')} />
             </Field>
             {zodiac && (
-              <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-violet-50 to-pink-50 text-sm">
+              <div className="px-3 py-2 rounded-xl bg-white/[0.04] border border-line text-sm">
                 <span className="font-semibold">
                   {zodiac.emoji} {zodiac.name} · {zodiac.element}
                 </span>
-                <span className="block text-xs text-gray-500">{zodiac.traits}</span>
+                <span className="block text-xs text-mute">{zodiac.traits}</span>
               </div>
             )}
             <Field label="Email" hint="(solo visible para ti)">
@@ -170,37 +166,37 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         ) : (
           <div>
             <div className="flex items-center gap-4">
-              <Avatar src={profile.photo} size={72} className="ring-4 ring-violet-100" />
+              <Avatar src={profile.photo} size={72} className="ring-4 ring-line" />
               <div className="flex-1 min-w-0">
                 <h3 className="text-xl font-bold truncate">
                   {profile.name || 'Sin nombre'} {profile.lastName}
                 </h3>
                 {zodiac && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-mute">
                     {zodiac.emoji} {zodiac.name} · {formatDayMonth(profile.birthday)}
                   </p>
                 )}
               </div>
-              <button onClick={() => setEditing(true)} aria-label="Editar perfil" className="p-2.5 rounded-xl bg-violet-50 text-violet-700">
+              <button onClick={() => setEditing(true)} aria-label="Editar perfil" className="p-2.5 rounded-xl bg-white/[0.06] text-fg">
                 <Pencil size={18} />
               </button>
             </div>
             <dl className="mt-4 space-y-2 text-sm">
               {profile.email && (
-                <div className="flex items-center gap-2.5 p-3 bg-gray-50 rounded-xl">
-                  <Mail size={16} className="text-gray-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                  <Mail size={16} className="text-mute shrink-0" />
                   <dd className="truncate">{profile.email}</dd>
                 </div>
               )}
               {profile.location && (
-                <div className="flex items-center gap-2.5 p-3 bg-gray-50 rounded-xl">
-                  <MapPin size={16} className="text-gray-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                  <MapPin size={16} className="text-mute shrink-0" />
                   <dd>{profile.location}</dd>
                 </div>
               )}
               {profile.interests && (
-                <div className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl">
-                  <Heart size={16} className="text-gray-400 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2.5 p-3 bg-white/[0.04] rounded-xl">
+                  <Heart size={16} className="text-mute shrink-0 mt-0.5" />
                   <dd>{profile.interests}</dd>
                 </div>
               )}
@@ -209,32 +205,32 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         )}
       </section>
 
-      <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5">
-        <h4 className="font-bold text-gray-900 flex items-center gap-2 mb-3">
-          <Star size={18} className="text-amber-400 fill-amber-400" /> Mi wishlist ({wishlist.length})
+      <section className="bg-surface rounded-3xl border border-line p-5">
+        <h4 className="font-bold text-fg flex items-center gap-2 mb-3">
+          <Star size={18} className="text-gold fill-gold" /> Mi wishlist ({wishlist.length})
         </h4>
         {wishlist.length === 0 ? (
-          <p className="text-sm text-gray-500">Marca con ⭐ las ideas de regalo que quieras guardar aquí.</p>
+          <p className="text-sm text-mute">Marca con la estrella las ideas de regalo que quieras guardar aquí.</p>
         ) : (
           <ul className="space-y-2.5">
             {wishlist.map((item) => (
-              <li key={`${item.id}-${item.friendId}`} className="flex gap-3 p-2.5 rounded-2xl border border-amber-100 bg-amber-50/40">
+              <li key={`${item.id}-${item.friendId}`} className="flex gap-3 p-2.5 rounded-2xl border border-line bg-surface">
                 {item.image ? (
                   <img src={item.image} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" onError={(e) => (e.currentTarget.style.visibility = 'hidden')} />
                 ) : (
-                  <div className="w-16 h-16 rounded-xl bg-violet-100 shrink-0 flex items-center justify-center text-2xl">🎁</div>
+                  <div className="w-16 h-16 rounded-xl bg-white/[0.08] shrink-0 flex items-center justify-center text-mute"><Gift size={22} strokeWidth={1.5} /></div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-gray-900 line-clamp-2">{item.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-semibold text-sm text-fg line-clamp-2">{item.name}</p>
+                  <p className="text-xs text-mute">
                     {item.price}
                     {(item.friendName || friendName(item.friendId)) && ` · para ${item.friendName || friendName(item.friendId)}`}
                   </p>
                   <div className="flex gap-2 mt-1.5">
-                    <a href={item.link || 'https://www.amazon.es'} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-violet-700 flex items-center gap-1">
+                    <a href={item.link || 'https://www.amazon.es'} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-gold flex items-center gap-1">
                       <ExternalLink size={13} /> Ver producto
                     </a>
-                    <button onClick={() => setRemoving(item)} className="text-xs font-semibold text-red-600 flex items-center gap-1 ml-2">
+                    <button onClick={() => setRemoving(item)} className="text-xs font-semibold text-red-400 flex items-center gap-1 ml-2">
                       <Trash2 size={13} /> Quitar
                     </button>
                   </div>
@@ -245,25 +241,25 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         )}
       </section>
 
-      <section className="rounded-3xl p-5 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
-        <h4 className="font-bold text-gray-900 flex items-center gap-2">
-          <Send size={18} className="text-green-600" /> Invita a tus amigos
+      <section className="rounded-3xl p-5 bg-surface border border-line">
+        <h4 className="font-bold text-fg flex items-center gap-2">
+          <Send size={18} className="text-fg" /> Invita a tus amigos
         </h4>
-        <p className="text-sm text-gray-600 mt-1 mb-3">Comparte Birthday Gifts con familia y amigos. Necesitarán un usuario para entrar.</p>
+        <p className="text-sm text-fg/70 mt-1 mb-3">Comparte Birthday Gifts con familia y amigos. Necesitarán un usuario para entrar.</p>
         <a
           href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold bg-green-500 text-white"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-white/5"
         >
           <Send size={18} /> Invitar por WhatsApp
         </a>
       </section>
 
-      <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5">
-        <h4 className="font-bold text-gray-900">Tus datos</h4>
-        <p className="text-sm text-gray-500 mt-1 mb-3">
-          Se guardan en este navegador. Descarga una copia para pasarlos a otro móvil u ordenador.
+      <section className="bg-surface rounded-3xl border border-line p-5">
+        <h4 className="font-bold text-fg">Tus datos</h4>
+        <p className="text-sm text-mute mt-1 mb-3">
+          {me?.user ? `Has entrado como @${me.user}. ` : ''}Se guardan en este navegador. Descarga una copia para pasarlos a otro móvil u ordenador.
         </p>
         <div className="grid grid-cols-2 gap-2.5">
           <Button variant="secondary" onClick={exportData}>
@@ -286,7 +282,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         />
         {me?.user && (
           <form method="post" action="/logout" className="mt-3">
-            <Button variant="secondary" type="submit" className="w-full !text-red-600">
+            <Button variant="secondary" type="submit" className="w-full !text-red-400">
               <LogOut size={17} /> Cerrar sesión
             </Button>
           </form>

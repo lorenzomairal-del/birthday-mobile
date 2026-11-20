@@ -6,7 +6,7 @@ const EMPTY = {
   favoriteFood: '', style: '', budget: '', relationship: '', photo: '',
 };
 
-const STEPS = ['📋 Información básica', '🎯 Gustos e intereses', '🎁 Preferencias de regalo'];
+const STEPS = ['Información básica', 'Gustos e intereses', 'Preferencias de regalo'];
 
 export default function FriendForm({ friend, onSave, onClose }) {
   const [step, setStep] = useState(0);
@@ -45,7 +45,7 @@ export default function FriendForm({ friend, onSave, onClose }) {
     >
       <div className="flex gap-1.5 mb-5">
         {STEPS.map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-violet-600' : 'bg-gray-200'}`} />
+          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-fg' : 'bg-line'}`} />
         ))}
       </div>
 

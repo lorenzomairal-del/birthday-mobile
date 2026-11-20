@@ -9,7 +9,7 @@ const GROUPS = [
 ];
 
 export const inviteText = () =>
-  `¡Hola! 🎁 Te invito a Birthday Gifts, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
+  `¡Hola! Te invito a Birthday Gifts, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
 
 const whatsappLink = (phone, text) =>
   `https://wa.me/${(phone || '').replace(/[^0-9]/g, '')}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
@@ -47,10 +47,9 @@ function AddConnectionSheet({ group, onSave, onClose }) {
                 type="button"
                 onClick={() => setData({ ...data, group: g.id })}
                 className={`rounded-xl border py-3 text-sm font-semibold ${
-                  data.group === g.id ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-gray-200 text-gray-600'
+                  data.group === g.id ? 'border-violet-500 bg-white/[0.06] text-fg' : 'border-line text-fg/70'
                 }`}
               >
-                <span className="block text-xl mb-0.5">{g.icon}</span>
                 {g.name}
               </button>
             ))}
@@ -97,12 +96,12 @@ export default function ConnectingView({ connections, onChange }) {
     const members = connections[selected] || [];
     return (
       <div>
-        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-violet-700 font-semibold py-1">
+        <button onClick={() => setSelected(null)} className="mb-3 -ml-1 flex items-center gap-1 text-gold font-semibold py-1">
           <ChevronLeft size={20} /> Grupos
         </button>
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h2 className="text-2xl font-extrabold">
-            {group.icon} {group.name}
+          <h2 className="font-display text-[32px] leading-none">
+            {group.name}
           </h2>
           <Button className="!py-2 !px-3 text-sm" onClick={() => setAdding(selected)}>
             <Plus size={17} /> Añadir
@@ -111,22 +110,22 @@ export default function ConnectingView({ connections, onChange }) {
         {members.length ? (
           <ul className="space-y-2.5">
             {members.map((m) => (
-              <li key={m.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex items-center gap-3">
+              <li key={m.id} className="bg-surface rounded-2xl border border-line p-3 flex items-center gap-3">
                 <Avatar size={44} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-900 truncate">{m.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{m.phone}</p>
+                  <p className="font-bold text-fg truncate">{m.name}</p>
+                  <p className="text-xs text-mute truncate">{m.phone}</p>
                 </div>
                 <a
                   href={whatsappLink(m.phone)}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`WhatsApp a ${m.name}`}
-                  className="px-3 py-2 bg-green-100 text-green-700 rounded-xl text-sm font-semibold flex items-center gap-1.5 shrink-0"
+                  className="px-3 py-2 border border-line text-fg rounded-xl text-sm font-semibold flex items-center gap-1.5 shrink-0"
                 >
                   <MessageCircle size={16} /> <span className="hidden min-[400px]:inline">WhatsApp</span>
                 </a>
-                <button onClick={() => setRemoving({ group: selected, member: m })} aria-label={`Quitar a ${m.name}`} className="p-2 text-gray-400">
+                <button onClick={() => setRemoving({ group: selected, member: m })} aria-label={`Quitar a ${m.name}`} className="p-2 text-mute">
                   <Trash2 size={17} />
                 </button>
               </li>
@@ -134,7 +133,7 @@ export default function ConnectingView({ connections, onChange }) {
           </ul>
         ) : (
           <EmptyState
-            icon={<Users className="text-violet-400" size={40} />}
+            icon={<Users className="text-mute" size={40} />}
             title="Grupo vacío"
             text="Añade a la primera persona de este grupo"
             action={<Button onClick={() => setAdding(selected)}>Añadir persona</Button>}
@@ -147,7 +146,6 @@ export default function ConnectingView({ connections, onChange }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-extrabold text-brand">Mis conexiones</h2>
 
       <ul className="space-y-2.5">
         {GROUPS.map((g) => {
@@ -156,16 +154,16 @@ export default function ConnectingView({ connections, onChange }) {
             <li key={g.id}>
               <button
                 onClick={() => setSelected(g.id)}
-                className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4 text-left active:bg-gray-50"
+                className="w-full bg-surface rounded-2xl border border-line p-4 flex items-center gap-4 text-left active:bg-white/[0.04]"
               >
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${g.color} flex items-center justify-center text-2xl shrink-0`}>{g.icon}</div>
+                <span className="font-display text-[34px] leading-none w-10 text-gold">{count}</span>
                 <div className="flex-1">
-                  <p className="font-bold text-gray-900">{g.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {count} persona{count === 1 ? '' : 's'}
+                  <p className="font-bold text-fg">{g.name}</p>
+                  <p className="text-sm text-mute">
+                    {count === 1 ? 'persona' : 'personas'}
                   </p>
                 </div>
-                <ChevronRight className="text-gray-300" />
+                <ChevronRight className="text-line" />
               </button>
             </li>
           );
@@ -179,7 +177,7 @@ export default function ConnectingView({ connections, onChange }) {
         href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold bg-green-500 text-white"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-semibold border border-line text-fg active:bg-white/5"
       >
         <Send size={18} /> Invitar por WhatsApp
       </a>

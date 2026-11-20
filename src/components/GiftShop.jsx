@@ -16,31 +16,31 @@ function loadHistory(friendId) {
 function GiftCard({ gift, isFav, inWishlist, onFav, onWishlist, onBuy }) {
   const [broken, setBroken] = useState(false);
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-violet-100 to-pink-100">
+    <div className="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col">
+      <div className="relative aspect-[4/3] bg-surface-2">
         {gift.image && !broken ? (
           <img src={gift.image} alt="" loading="lazy" className="w-full h-full object-cover" onError={() => setBroken(true)} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Gift size={40} className="text-violet-300" />
+            <Gift size={40} className="text-mute" />
           </div>
         )}
         <div className="absolute top-1.5 right-1.5 flex gap-1.5">
-          <button onClick={onWishlist} aria-label="Añadir a mi wishlist" className="w-8 h-8 bg-white/95 rounded-full flex items-center justify-center shadow">
-            <Star size={16} className={inWishlist ? 'fill-amber-400 text-amber-400' : 'text-gray-400'} />
+          <button onClick={onWishlist} aria-label="Añadir a mi wishlist" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
+            <Star size={16} className={inWishlist ? 'fill-gold text-gold' : 'text-mute'} />
           </button>
-          <button onClick={onFav} aria-label="Favorito" className="w-8 h-8 bg-white/95 rounded-full flex items-center justify-center shadow">
-            <Heart size={16} className={isFav ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+          <button onClick={onFav} aria-label="Favorito" className="w-8 h-8 bg-ink/80 rounded-full flex items-center justify-center">
+            <Heart size={16} className={isFav ? 'fill-gold text-gold' : 'text-mute'} />
           </button>
         </div>
       </div>
       <div className="p-3 flex-1 flex flex-col">
-        <h5 className="font-bold text-sm text-gray-900 leading-snug line-clamp-2">{gift.name}</h5>
-        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{gift.description}</p>
-        {gift.match && <p className="text-[11px] text-violet-700 bg-violet-50 rounded-md px-2 py-1 mt-2 line-clamp-2">✨ {gift.match}</p>}
+        <h5 className="font-bold text-sm text-fg leading-snug line-clamp-2">{gift.name}</h5>
+        <p className="text-xs text-mute mt-1 line-clamp-2">{gift.description}</p>
+        {gift.match && <p className="text-[11px] text-gold bg-white/[0.06] rounded-md px-2 py-1 mt-2 line-clamp-2">{gift.match}</p>}
         <div className="mt-auto pt-2">
-          <p className="text-violet-700 font-bold text-sm mb-2">{gift.price}</p>
-          <button onClick={onBuy} className="w-full bg-brand text-white rounded-lg py-2 text-sm font-semibold flex items-center justify-center gap-1.5">
+          <p className="text-gold font-bold text-sm mb-2">{gift.price}</p>
+          <button onClick={onBuy} className="w-full bg-fg text-ink rounded-lg py-2 text-sm font-semibold flex items-center justify-center gap-1.5">
             <ShoppingBag size={15} /> Comprar
           </button>
         </div>
@@ -136,29 +136,29 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
   const display = tab === 'favs' ? favs : ideas;
 
   return (
-    <Sheet title="🎁 Ideas de regalo" subtitle={`Para ${friend.name} ${friend.lastName || ''}`} onClose={onClose} full>
-      <div className="sticky top-0 z-10 bg-white pb-3 -mx-5 px-5">
+    <Sheet title="Ideas de regalo" subtitle={`Para ${friend.name} ${friend.lastName || ''}`} onClose={onClose} full>
+      <div className="sticky top-0 z-10 bg-surface pb-3 -mx-5 px-5">
         <Segmented
           value={tab}
           onChange={setTab}
           options={[
             { value: 'ideas', label: 'Recomendaciones' },
-            { value: 'favs', label: `❤️ Favoritos (${favs.length})` },
+            { value: 'favs', label: `Favoritos (${favs.length})` },
           ]}
         />
       </div>
 
       {tab === 'ideas' && (
-        <div className="rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 border border-violet-100 p-3 mb-4">
+        <div className="rounded-2xl bg-surface border border-line p-3 mb-4">
           <div className="space-y-1.5 mb-2.5 max-h-28 overflow-y-auto text-sm">
             {hist.chatHistory.length === 0 ? (
-              <p className="text-gray-700">
-                💬 Cuéntame qué le gusta a {friend.name} y te ayudo a encontrar el regalo perfecto.
+              <p className="text-fg/85">
+                Cuéntame qué le gusta a {friend.name} y te ayudo a encontrar el regalo perfecto.
               </p>
             ) : (
               hist.chatHistory.map((m, i) => (
-                <p key={i} className={m.role === 'user' ? 'text-gray-900 font-medium' : 'text-violet-700'}>
-                  {m.role === 'user' ? 'Tú: ' : '💡 '}
+                <p key={i} className={m.role === 'user' ? 'text-fg font-medium' : 'text-gold'}>
+                  {m.role === 'user' ? 'Tú: ' : ''}
                   {m.pending ? <span className="animate-pulse">Pensando…</span> : m.text}
                 </p>
               ))
@@ -176,9 +176,9 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
               onChange={(e) => setMsg(e.target.value)}
               placeholder="Ej: le encanta el café y los libros"
               enterKeyHint="send"
-              className="flex-1 min-w-0 px-3 py-2.5 bg-white border border-violet-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-violet-100"
+              className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-line rounded-xl focus:outline-none focus:ring-4 focus:ring-gold/10"
             />
-            <button type="submit" disabled={loading || !msg.trim()} aria-label="Pedir ideas" className="px-3.5 bg-brand text-white rounded-xl disabled:opacity-40">
+            <button type="submit" disabled={loading || !msg.trim()} aria-label="Pedir ideas" className="px-3.5 bg-fg text-ink rounded-xl disabled:opacity-40">
               {aiEnabled ? <Sparkles size={18} /> : <Send size={18} />}
             </button>
           </form>
@@ -186,8 +186,8 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
       )}
 
       {display.length === 0 ? (
-        <div className="text-center py-14 text-gray-500">
-          <Heart size={48} className="mx-auto text-gray-200 mb-3" />
+        <div className="text-center py-14 text-mute">
+          <Heart size={48} className="mx-auto text-line mb-3" />
           {tab === 'favs' ? 'Aún no tienes favoritos. Toca el ❤️ de una idea.' : 'Sin ideas todavía.'}
         </div>
       ) : (
@@ -215,7 +215,7 @@ export default function GiftShop({ friend, aiEnabled, wishlist, onChangeWishlist
                   key={i}
                   onClick={() => saveHist({ ...hist, currentPage: i })}
                   className={`w-9 h-9 rounded-full text-sm font-bold ${
-                    hist.currentPage === i ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600'
+                    hist.currentPage === i ? 'bg-fg text-ink' : 'bg-white/[0.06] text-fg/70'
                   }`}
                 >
                   {i + 1}
