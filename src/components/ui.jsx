@@ -43,14 +43,16 @@ export function Sheet({ title, subtitle, onClose, children, footer, full = false
   );
 }
 
-export function Field({ label, hint, children }) {
+// group: para varios botones (chips) dentro, que no deben ir en un <label>.
+export function Field({ label, hint, children, group = false }) {
+  const Tag = group ? 'div' : 'label';
   return (
-    <label className="block">
+    <Tag className="block" {...(group ? { role: 'group', 'aria-label': label } : {})}>
       <span className="block eyebrow mb-1.5">
         {label} {hint && <span className="text-accent">{hint}</span>}
       </span>
       {children}
-    </label>
+    </Tag>
   );
 }
 

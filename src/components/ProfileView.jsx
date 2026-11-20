@@ -4,68 +4,9 @@ import { getZodiacSign, formatDayMonth } from '../lib/zodiac.js';
 import * as store from '../lib/storage.js';
 import { Field, inputClass, Button, Avatar, PhotoPicker, ConfirmSheet } from './ui.jsx';
 import { inviteText } from './ConnectingView.jsx';
+import { whatsappLinkProps } from '../lib/whatsapp.js';
+import CityInput from './CityInput.jsx';
 
-function CityInput({ value, onChange }) {
-  const [suggestions, setSuggestions] = useState([]);
-  const timer = useRef(null);
-
-  const search = (q) => {
-    clearTimeout(timer.current);
-    if (!q || q.length < 2) return setSuggestions([]);
-    timer.current = setTimeout(async () => {
-      try {
-        const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=es&format=json`);
-        const data = await r.json();
-        setSuggestions(
-          (data.results || []).map((c) => ({
-            key: c.id,
-            name: c.name,
-            sub: [c.admin1, c.country].filter(Boolean).join(', '),
-            display: [c.name, c.admin1, c.country].filter(Boolean).join(', '),
-          }))
-        );
-      } catch {
-        setSuggestions([]);
-      }
-    }, 250);
-  };
-
-  return (
-    <div className="relative">
-      <input
-        className={inputClass}
-        value={value}
-        placeholder="Ej: Madrid, España"
-        autoComplete="off"
-        onChange={(e) => {
-          onChange(e.target.value);
-          search(e.target.value);
-        }}
-        onBlur={() => setTimeout(() => setSuggestions([]), 200)}
-      />
-      {suggestions.length > 0 && (
-        <ul className="absolute z-20 inset-x-0 mt-1 bg-ink border border-line rounded-2xl shadow-lg overflow-hidden">
-          {suggestions.map((c) => (
-            <li key={c.key}>
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  onChange(c.display);
-                  setSuggestions([]);
-                }}
-                className="w-full text-left px-4 py-2.5 active:bg-fg/5 border-b last:border-b-0 border-line"
-              >
-                <span className="block text-sm font-medium text-fg">{c.name}</span>
-                <span className="block text-xs text-mute">{c.sub}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
 
 const EMPTY = { name: '', lastName: '', birthday: '', email: '', location: '', interests: '', photo: '' };
 
@@ -247,9 +188,7 @@ export default function ProfileView({ me, profile, onSaveProfile, wishlist, onCh
         </h4>
         <p className="text-sm text-fg/70 mt-1 mb-3">Comparte la app con familia y amigos. Necesitarán un usuario para entrar.</p>
         <a
-          href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...whatsappLinkProps('', inviteText())}
           className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
         >
           <Send size={18} /> Invitar por WhatsApp

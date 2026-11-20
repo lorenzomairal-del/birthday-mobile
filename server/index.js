@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import { loginPage as renderLogin } from './loginPage.js';
+import { buildIcs } from '../src/lib/calendar.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, '..', 'dist');
@@ -173,6 +174,27 @@ app.get('/api/me', (req, res) => {
   res.json({ user: req.user, ai: Boolean(process.env.ANTHROPIC_API_KEY) });
 });
 
+// Calendario .ics con los cumpleaños que manda la app (los datos viven en el navegador).
+app.get('/api/calendar.ics', (req, res) => {
+  let rows = [];
+  try {
+    rows = JSON.parse(Buffer.from(String(req.query.d || ''), 'base64url').toString('utf8'));
+  } catch {
+    return res.status(400).send('Datos no válidos');
+  }
+  if (!Array.isArray(rows)) return res.status(400).send('Datos no válidos');
+  const friends = rows.slice(0, 1000).map(([id, name, birthday]) => ({
+    id: String(id || '').slice(0, 40),
+    name: String(name || '').slice(0, 80),
+    birthday: String(birthday || '').slice(0, 10),
+  }));
+  const file = friends.length === 1 ? `cumple-${friends[0].name.split(' ')[0].toLowerCase() || 'persona'}.ics` : 'cumpleanos.ics';
+  res.set('content-type', 'text/calendar; charset=utf-8');
+  res.set('content-disposition', `${req.query.dl ? 'attachment' : 'inline'}; filename="${file.replace(/[^\w.-]/g, '')}"`);
+  res.set('cache-control', 'no-store');
+  res.send(buildIcs(friends));
+});
+
 // Ideas de regalo con IA. La clave nunca llega al navegador.
 app.post('/api/gift-ideas', async (req, res) => {
   const key = process.env.ANTHROPIC_API_KEY;
@@ -184,6 +206,9 @@ app.post('/api/gift-ideas', async (req, res) => {
   const details = [
     f.interests && `intereses: ${clip(f.interests)}`,
     f.hobbies && `hobbies: ${clip(f.hobbies)}`,
+    f.plans && `le gusta pasar el tiempo: ${clip(f.plans)}`,
+    f.wishes && `ha mencionado que quiere o necesita: ${clip(f.wishes)}`,
+    f.avoid && `evitar (no le gusta o ya lo tiene): ${clip(f.avoid)}`,
     f.favoriteFood && `comida favorita: ${clip(f.favoriteFood)}`,
     f.style && `estilo: ${clip(f.style)}`,
     f.budget && `presupuesto: ${clip(f.budget)}`,

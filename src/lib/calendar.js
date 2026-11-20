@@ -22,7 +22,7 @@ function event(f) {
     `DTSTART;VALUE=DATE:${start}`,
     `DTEND;VALUE=DATE:${end}`,
     'RRULE:FREQ=YEARLY',
-    `SUMMARY:${esc(`🎂 Cumpleaños de ${name}`)}`,
+    `SUMMARY:${esc(`Cumpleaños de ${name}`)}`,
     'TRANSP:TRANSPARENT',
     'BEGIN:VALARM',
     'ACTION:DISPLAY',
@@ -55,8 +55,35 @@ export function downloadIcs(friends, filename = 'cumpleanos.ics') {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function congratsLink(friend) {
-  const digits = (friend.phone || '').replace(/[^0-9]/g, '');
-  const text = `¡Feliz cumpleaños, ${friend.name}! 🎂🎉 Que pases un día genial.`;
-  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+// Datos mínimos para el servidor: [id, nombre, fecha].
+export function calendarPayload(friends) {
+  const rows = friends.map((f) => [f.id || '', `${f.name || ''} ${f.lastName || ''}`.trim(), f.birthday]);
+  const bytes = new TextEncoder().encode(JSON.stringify(rows));
+  let bin = '';
+  bytes.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// El .ics lo sirve el servidor: así el iPhone lo abre directamente en Calendario.
+export const icsUrl = (friends, download = false) => `/api/calendar.ics?d=${calendarPayload(friends)}${download ? '&dl=1' : ''}`;
+
+// Enlace de Google Calendar para una persona (evento anual de todo el día).
+export function googleCalendarUrl(f) {
+  const p = parseDate(f.birthday);
+  if (!p) return 'https://calendar.google.com';
+  const now = new Date();
+  let year = now.getFullYear();
+  if (new Date(year, p.month - 1, p.day) < new Date(now.getFullYear(), now.getMonth(), now.getDate())) year += 1;
+  const s = new Date(year, p.month - 1, p.day);
+  const e = new Date(year, p.month - 1, p.day + 1);
+  const fmt = (d) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+  const name = `${f.name || ''} ${f.lastName || ''}`.trim();
+  const params = [
+    'action=TEMPLATE',
+    `text=${encodeURIComponent(`Cumpleaños de ${name}`)}`,
+    `dates=${fmt(s)}/${fmt(e)}`,
+    `recur=${encodeURIComponent('RRULE:FREQ=YEARLY')}`,
+    `details=${encodeURIComponent('Recordatorio de la app Cumpleaños')}`,
+  ];
+  return `https://calendar.google.com/calendar/render?${params.join('&')}`;
 }

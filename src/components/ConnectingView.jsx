@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Users, MessageCircle, Trash2, Send } from 'lucide-react';
+import { whatsappLinkProps } from '../lib/whatsapp.js';
 import { Sheet, Field, inputClass, Button, Avatar, EmptyState, ConfirmSheet } from './ui.jsx';
 
 const GROUPS = [
@@ -11,8 +12,6 @@ const GROUPS = [
 export const inviteText = () =>
   `¡Hola! Te invito a Cumpleaños, una app para no olvidar ningún cumpleaños y encontrar el regalo perfecto: ${window.location.origin}`;
 
-const whatsappLink = (phone, text) =>
-  `https://wa.me/${(phone || '').replace(/[^0-9]/g, '')}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 
 function AddConnectionSheet({ group, onSave, onClose }) {
   const [data, setData] = useState({ name: '', phone: '', group: group || '' });
@@ -117,9 +116,7 @@ export default function ConnectingView({ connections, onChange }) {
                   <p className="text-xs text-mute truncate">{m.phone}</p>
                 </div>
                 <a
-                  href={whatsappLink(m.phone)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...whatsappLinkProps(m.phone)}
                   aria-label={`WhatsApp a ${m.name}`}
                   className="px-3 py-2 bg-ink text-fg rounded-full text-sm font-semibold flex items-center gap-1.5 shrink-0"
                 >
@@ -174,10 +171,8 @@ export default function ConnectingView({ connections, onChange }) {
         <Plus size={19} /> Añadir persona a un grupo
       </Button>
       <a
-        href={`https://wa.me/?text=${encodeURIComponent(inviteText())}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
+        {...whatsappLinkProps('', inviteText())}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold bg-surface text-fg active:bg-surface-2"
       >
         <Send size={18} /> Invitar por WhatsApp
       </a>

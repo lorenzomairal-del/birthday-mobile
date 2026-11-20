@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Sheet, Field, inputClass, Button, PhotoPicker } from './ui.jsx';
+import CityInput from './CityInput.jsx';
 
 const EMPTY = {
   name: '', lastName: '', birthday: '', gender: '', location: '', interests: '', hobbies: '',
-  favoriteFood: '', style: '', budget: '', relationship: '', photo: '', phone: '',
+  favoriteFood: '', style: '', budget: '', relationship: '', photo: '', phone: '', plans: '', wishes: '', avoid: '',
 };
 
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -17,11 +18,16 @@ export function BirthdayInput({ value, onChange }) {
   const month = m ? +m[2] : '';
   const daysIn = month ? new Date(2000, month, 0).getDate() : 31;
 
+  // Recuerda el año para recuperarlo si se vuelve a desmarcar «No sé el año».
+  const savedYear = useRef(m && m[1] !== '0000' ? m[1] : '');
+
   const toggle = () => {
     if (knowsYear) {
+      if (m) savedYear.current = m[1];
       onChange(m ? `0000-${m[2]}-${m[3]}` : '');
     } else {
-      onChange('');
+      const complete = m && m[2] !== '00' && m[3] !== '00';
+      onChange(complete && savedYear.current ? `${savedYear.current}-${m[2]}-${m[3]}` : '');
     }
     setKnowsYear(!knowsYear);
   };
@@ -64,7 +70,32 @@ export function BirthdayInput({ value, onChange }) {
   );
 }
 
-const STEPS = ['Información básica', 'Gustos e intereses', 'Preferencias de regalo'];
+const STEPS = ['Información básica', 'Conócele mejor', 'Preferencias de regalo'];
+
+const PLANS = ['Viajar', 'Salir a cenar', 'Deporte', 'Naturaleza', 'Leer', 'Series y cine', 'Música y conciertos', 'Cocinar', 'Videojuegos', 'Arte y museos', 'Fiesta', 'Estar en casa'];
+
+function Chips({ value, onChange, options }) {
+  const selected = value ? value.split(', ').filter(Boolean) : [];
+  const toggle = (o) => onChange((selected.includes(o) ? selected.filter((x) => x !== o) : [...selected, o]).join(', '));
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((o) => {
+        const on = selected.includes(o);
+        return (
+          <button
+            key={o}
+            type="button"
+            onClick={() => toggle(o)}
+            aria-pressed={on}
+            className={`px-3.5 py-2 rounded-full text-sm font-medium transition ${on ? 'bg-fg text-ink' : 'bg-surface text-fg active:bg-surface-2'}`}
+          >
+            {o}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function FriendForm({ friend, onSave, onClose }) {
   const [step, setStep] = useState(0);
@@ -86,7 +117,7 @@ export default function FriendForm({ friend, onSave, onClose }) {
             </Button>
           )}
           {/* Guardar está disponible desde el paso 1: el resto de datos es opcional */}
-          {!last && (
+          {!last && !(step === 1 && !friend) && (
             <Button variant="soft" className="flex-1" disabled={!canContinue} onClick={() => onSave(data)}>
               Guardar
             </Button>
@@ -132,15 +163,26 @@ export default function FriendForm({ friend, onSave, onClose }) {
       )}
 
       {step === 1 && (
-        <div className="space-y-4">
-          <Field label="Ciudad">
-            <input className={inputClass} value={data.location} onChange={set('location')} placeholder="Ej: Madrid" />
+        <div className="space-y-5">
+          <Field label="¿Dónde vive?">
+            <CityInput value={data.location} onChange={(location) => setData({ ...data, location })} />
           </Field>
-          <Field label="Intereses">
-            <textarea className={inputClass} rows={3} value={data.interests} onChange={set('interests')} placeholder="Ej: tecnología, fotografía, viajes..." />
+          <Field group label="¿Cómo le gusta pasar el tiempo libre?">
+            <Chips value={data.plans} onChange={(plans) => setData({ ...data, plans })} options={PLANS} />
           </Field>
-          <Field label="Hobbies">
-            <textarea className={inputClass} rows={3} value={data.hobbies} onChange={set('hobbies')} placeholder="Ej: leer, hacer deporte, cocinar..." />
+          <Field label="¿Qué le apasiona?">
+            <textarea className={inputClass} rows={2} value={data.interests} onChange={set('interests')} placeholder="Ej: la fotografía, el Barça, el café de especialidad..." />
+          </Field>
+          {data.hobbies && (
+            <Field label="Hobbies">
+              <textarea className={inputClass} rows={2} value={data.hobbies} onChange={set('hobbies')} />
+            </Field>
+          )}
+          <Field label="¿Ha comentado algo que quiera o necesite?">
+            <input className={inputClass} value={data.wishes} onChange={set('wishes')} placeholder="Ej: unos auriculares nuevos" />
+          </Field>
+          <Field label="¿Algo que no le guste o que ya tenga?">
+            <input className={inputClass} value={data.avoid} onChange={set('avoid')} placeholder="Ej: no bebe alcohol, ya tiene Kindle" />
           </Field>
         </div>
       )}

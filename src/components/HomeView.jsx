@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Gift, Search, Pencil, Trash2, X, ArrowRight, MessageCircle, CalendarPlus } from 'lucide-react';
-import { daysUntil, formatDayMonth, getZodiacSign, turningAge } from '../lib/zodiac.js';
+import { Gift, Search, Pencil, Trash2, X, ArrowRight, MessageCircle, CalendarPlus, ChevronRight } from 'lucide-react';
+import { daysUntil, formatDayMonth, getZodiacSign, turningAge, parseDate } from '../lib/zodiac.js';
 import { Avatar, Button, EmptyState, Segmented, Sheet } from './ui.jsx';
-import { congratsLink, downloadIcs } from '../lib/calendar.js';
+import { congratsText, whatsappLinkProps } from '../lib/whatsapp.js';
+import CalendarSheet from './CalendarSheet.jsx';
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const monthOf = (b) => +((/^\d{4}-(\d{2})/.exec(b || '') || [])[1] || 0);
@@ -20,14 +21,22 @@ function DaysLabel({ days }) {
   );
 }
 
-function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
+function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete, onCalendar }) {
   const zodiac = getZodiacSign(friend.birthday);
   const age = turningAge(friend.birthday);
   const days = daysUntil(friend.birthday);
+  const bp = parseDate(friend.birthday);
+  const fullDate =
+    formatDayMonth(friend.birthday, { day: 'numeric', month: 'long' }) + (bp && bp.year >= 1900 ? ` de ${bp.year}` : '');
   const details = [
+    ['Cumpleaños', fullDate],
+    ['Móvil', friend.phone],
     ['Ciudad', friend.location],
     ['Intereses', friend.interests],
     ['Hobbies', friend.hobbies],
+    ['Tiempo libre', friend.plans],
+    ['Le haría ilusión', friend.wishes],
+    ['Evitar', friend.avoid],
     ['Comida favorita', friend.favoriteFood],
     ['Estilo', friend.style && friend.style[0].toUpperCase() + friend.style.slice(1)],
     ['Presupuesto', BUDGETS[friend.budget]],
@@ -68,18 +77,16 @@ function FriendSheet({ friend, onClose, onGifts, onEdit, onDelete }) {
       </div>
       <div className="mt-5 grid grid-cols-2 gap-2">
         <a
-          href={congratsLink(friend)}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...whatsappLinkProps(friend.phone, congratsText(friend))}
           className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-[15px] font-semibold bg-surface active:bg-surface-2"
         >
           <MessageCircle size={17} strokeWidth={1.8} /> Felicitar
         </a>
         <button
-          onClick={() => downloadIcs([friend], `cumple-${(friend.name || 'persona').toLowerCase()}.ics`)}
+          onClick={() => onCalendar([friend])}
           className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-[15px] font-semibold bg-surface active:bg-surface-2"
         >
-          <CalendarPlus size={17} strokeWidth={1.8} /> Recordatorio
+          <CalendarPlus size={17} strokeWidth={1.8} /> Al calendario
         </button>
       </div>
       {details.length > 0 && (
@@ -101,6 +108,7 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
   const [searching, setSearching] = useState(false);
   const [sort, setSort] = useState('date');
   const [open, setOpen] = useState(null);
+  const [calendar, setCalendar] = useState(null);
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -165,12 +173,20 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
               {nextZodiac ? ` · ${nextZodiac.name}` : ''}
             </p>
           </button>
-          <button
-            onClick={() => onGifts(next)}
-            className="mt-5 w-full flex items-center justify-between rounded-full bg-pop-fg text-pop px-5 py-3.5 text-[15px] font-semibold active:opacity-90"
-          >
-            Ideas de regalo <ArrowRight size={18} />
-          </button>
+          <div className="mt-5 flex gap-2">
+            <button
+              onClick={() => setOpen(next)}
+              className="shrink-0 rounded-full border border-pop-fg/25 px-5 py-3.5 text-[15px] font-semibold active:bg-pop-fg/10"
+            >
+              Ver ficha
+            </button>
+            <button
+              onClick={() => onGifts(next)}
+              className="flex-1 flex items-center justify-between rounded-full bg-pop-fg text-pop px-5 py-3.5 text-[15px] font-semibold active:opacity-90"
+            >
+              Ideas de regalo <ArrowRight size={18} />
+            </button>
+          </div>
         </section>
       )}
 
@@ -237,6 +253,7 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
                   </p>
                 </div>
                 <DaysLabel days={days} />
+                <ChevronRight size={18} className="text-mute/60 -ml-1.5 shrink-0" />
               </button>
             </li>
           );
@@ -244,7 +261,7 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
       </ul>
 
       <button
-        onClick={() => downloadIcs(friends)}
+        onClick={() => setCalendar(friends)}
         className="mt-6 w-full flex items-center justify-center gap-2 rounded-full bg-surface px-5 py-3.5 text-[15px] font-semibold active:bg-surface-2"
       >
         <CalendarPlus size={17} strokeWidth={1.8} /> Añadir todos a mi calendario
@@ -252,8 +269,19 @@ export default function HomeView({ friends, onAdd, onEdit, onDelete, onGifts }) 
       <p className="mt-2 text-center text-[13px] text-mute">Te avisará el día antes y el mismo día, cada año.</p>
 
       {open && (
-        <FriendSheet friend={open} onClose={() => setOpen(null)} onGifts={act(onGifts)} onEdit={act(onEdit)} onDelete={act(onDelete)} />
+        <FriendSheet
+          friend={open}
+          onClose={() => setOpen(null)}
+          onGifts={act(onGifts)}
+          onEdit={act(onEdit)}
+          onDelete={act(onDelete)}
+          onCalendar={(list) => {
+            setOpen(null);
+            setCalendar(list);
+          }}
+        />
       )}
+      {calendar && <CalendarSheet friends={calendar} onClose={() => setCalendar(null)} />}
     </div>
   );
 }
